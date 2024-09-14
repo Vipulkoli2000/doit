@@ -23,6 +23,9 @@ Route::group(['middleware'=>['auth:sanctum', 'permission']], function(){
    Route::resource('projects', ProjectsController::class);
    Route::resource('tasks', TasksController::class);
    Route::resource('taskSubmissions', TaskSubmissionsController::class);
+   Route::get('/users', [UserController::class, 'index'])->name('users.index');
+   Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
   
 
 });

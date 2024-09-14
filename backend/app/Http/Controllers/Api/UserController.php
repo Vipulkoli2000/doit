@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Api\BaseController;
 
 class UserController extends BaseController
@@ -79,6 +80,37 @@ class UserController extends BaseController
     {
         $request->user()->currentAccessToken()->delete();
         return $this->sendResponse([], 'User logged out successfully.');
+    }
+
+
+    public function index(): JsonResponse
+    {
+        $users = User::role("member")->get();
+        
+        return $this->sendResponse(['Users'=> UserResource::collection($users)], "all users retrived sucessfully");
+    }
+
+
+    public function store(Request $request){
+        
+       $user = new User();
+       $user->name = $request->input('name');
+       $user->email = $request->input('email');
+       $user->password =  Hash::make('abcd123');
+       $user->save();
+       
+       if($request->has('role')){
+        $role = $request->input('role');
+        $memberRole = Role::where("name", $role)->first();
+       }
+       else{
+        $memberRole = Role::where("name", 'member')->first();
+       }
+      
+       $user->assignRole($memberRole);
+      
+       return $this->sendResponse(['User'=> new UserResource($user)], "user stored successfully");
+
     }
 
 
