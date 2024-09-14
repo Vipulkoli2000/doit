@@ -85,7 +85,7 @@ class UserController extends BaseController
 
     public function index(): JsonResponse
     {
-        $users = User::role("member")->get();
+        $users = User::all();
         
         return $this->sendResponse(['Users'=> UserResource::collection($users)], "all users retrived sucessfully");
     }
