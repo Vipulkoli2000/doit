@@ -23,7 +23,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
              'project_id' => ['nullable', 'integer'],
-             'title' => ['required', 'string'],
+             'title' => ['nullable', 'string'],
              'description' => ['nullable', 'string'],
              'status' => ['nullable', 'string'],
              'start_date'=> [ 'nullable','date'],
