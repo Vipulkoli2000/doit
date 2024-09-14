@@ -17,7 +17,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { UserNav } from "./Users/UserNav";
 import AddUser from "./Users/AddUser";
 import { Button } from "@/components/ui/button";
-// import toast from "sonner";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -41,7 +41,7 @@ import {
 export type User = {
   id: string;
   name: string;
-  roles: string;
+  role: string;
   email: string;
 };
 
@@ -75,11 +75,9 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "roles",
-    header: "Roles",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("roles")}</div>
-    ),
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
   },
   {
     accessorKey: "email",
@@ -101,7 +99,26 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
+      const getitem = localStorage.getItem("user");
+      const users = JSON.parse(getitem);
+      const handleDelete = async (id: string) => {
+        try {
+          await axios.delete(`/api/users/${id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${users.token}`,
+            },
+          });
+          toast.success("User deleted successfully!");
+          window.location.reload(); // Optional: Show success message
 
+          // Remove the deleted user from the state
+          setData((prevData) => prevData.filter((user) => user.id !== id));
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          toast.error("Failed to delete user"); // Optional: Show error message
+        }
+      };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -119,8 +136,7 @@ export const columns: ColumnDef<User>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setAlertDialog(true);
-                dispatch(setUserlist(user.id));
+                handleDelete(user.id);
               }}
             >
               Delete
