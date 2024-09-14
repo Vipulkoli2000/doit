@@ -114,4 +114,23 @@ class TasksController extends BaseController
 
         return $this->sendResponse([], "Task Deleted Successfully");
     }
+
+    public function showProjectsTasks(string $projectId){
+     
+        $authUser = auth()->user()->roles->pluck('name')->first();
+        if($authUser == 'admin'){
+            $tasks = Task::with("users")
+            ->where('project_id', $projectId)
+            ->get();
+
+        } elseif($authUser == 'member'){
+             $tasks = auth()->user()->with("tasks.users")
+             ->where('project_id', $projectId)
+             ->get();  //auth()->user()->tasks()->users()->get();   or auth()->user()->tasks()->with("users")->get();
+
+        }
+           //should we give only one variable called data in every api?
+        return $this->sendResponse(['Task'=> TaskResource::collection($tasks)], "Projects retrived successfuly");
+
+    }
 }

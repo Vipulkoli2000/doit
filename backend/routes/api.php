@@ -27,6 +27,7 @@ Route::group(['middleware'=>['auth:sanctum', 'permission']], function(){
    Route::post('/users', [UserController::class, 'store'])->name('users.store');
    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
    Route::delete('/users/{id}', [UserController::class, 'delete'])->name('users.delete');
+   Route::get('/tasks/{projectId}', [TasksController::class, 'showProjectsTasks'])->name('tasks.showProjectsTasks');
 
   
 });
