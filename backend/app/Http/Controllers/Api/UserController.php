@@ -113,5 +113,39 @@ class UserController extends BaseController
 
     }
 
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $user = User::find($id);
+       $user->name = $request->input('name');
+       $user->email = $request->input('email');
+       $user->password = Hash::make($request->input('password'));
+       $user->save();
+       
+       if($request->has('role')){
+        $role = $request->input('role');
+        $memberRole = Role::where("name", $role)->first();
+       }
+       else{
+        $memberRole = Role::where("name", 'member')->first();
+       }
+      
+       $user->assignRole($memberRole);
+      
+       return $this->sendResponse(['User'=> new UserResource($user)], "User Updated successfully");
 
+    }
+
+    public function delete(string $id): JsonResponse
+    {
+        $user = User::find($id);
+
+        if(!$user){
+            return $this->sendError("User not found", ['error'=>'User not found']);
+        }
+
+        $user->delete();
+
+        return $this->sendResponse([], "User deleted successfully");
+
+    }
 }

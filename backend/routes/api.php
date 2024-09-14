@@ -25,8 +25,9 @@ Route::group(['middleware'=>['auth:sanctum', 'permission']], function(){
    Route::resource('taskSubmissions', TaskSubmissionsController::class);
    Route::get('/users', [UserController::class, 'index'])->name('users.index');
    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+   Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+   Route::delete('/users/{id}', [UserController::class, 'delete'])->name('users.delete');
 
   
-
 });
 Route::get('/files/{files}', [TaskSubmissionsController::class, 'showFiles'])->name("show.files");
