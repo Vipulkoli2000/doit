@@ -96,7 +96,7 @@ class UserController extends BaseController
        $user = new User();
        $user->name = $request->input('name');
        $user->email = $request->input('email');
-       $user->password =  Hash::make('abcd123');
+       $user->password = Hash::make($request->input('password'));
        $user->save();
        
        if($request->has('role')){
