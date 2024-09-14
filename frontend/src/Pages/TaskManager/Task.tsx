@@ -1,32 +1,28 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "@/Dashboard/Sidebar";
 import axios from "axios";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
+  ColumnFiltersState,
   VisibilityState,
-  flexRender,
+  useReactTable,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-// import TaskNav from "./TaskNav";
+import { flexRender } from "@tanstack/react-table";
 import AddTask from "./AddTask";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import toast from "sonner";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
@@ -38,13 +34,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+// Define your User type
 export type User = {
   id: string;
-  title: string;
   description: string;
   priority: string;
-  weight: string;
-  roles: string;
+  weight: number;
+  assignedUser: string;
 };
 
 // Define your columns
@@ -72,78 +68,96 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: " title",
-    header: "Title",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue(" title")}</div>
-    ),
-  },
-  {
-    accessorKey: " description",
+    accessorKey: "description",
     header: "Description",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue(" description")}</div>
+      <div className="capitalize">{row.getValue("description")}</div>
     ),
   },
   {
     accessorKey: "priority",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Priority
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Priority
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <div className="lowercase">{row.getValue("priority")}</div>
     ),
   },
   {
     accessorKey: "weight",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Weight
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Weight
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => (
       <div className="lowercase">{row.getValue("weight")}</div>
     ),
   },
   {
-    accessorKey: "roles",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Role
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "assignedUser",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Assign To
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
-      const roles = row.getValue("roles");
+      const assignedUser = row.getValue("assignedUser");
       return (
-        <div className="lowercase">{roles ? roles : "No roles assigned"}</div>
+        <div className="lowercase">{assignedUser || "No user assigned"}</div>
       );
     },
   },
   {
     id: "actions",
-    enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
+      const getitem = localStorage.getItem("user");
+      const users = JSON.parse(getitem);
+
+      if (!users || !users.token) {
+        toast.error("User not authenticated. Please log in again.");
+        return;
+      }
+
+      const handleDelete = async (id: string) => {
+        // Confirm the deletion with the user
+        if (window.confirm("Are you sure you want to delete this task?")) {
+          try {
+            // Make the API call to delete the task
+            await axios.delete(`/api/tasks/${id}`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${users.token}`,
+              },
+            });
+            window.location.reload();
+            // Update the state to remove the deleted task
+            setData((prevData) => prevData.filter((task) => task.id !== id));
+
+            // Show success message
+            toast.success("Task deleted successfully");
+          } catch (error) {
+            console.error("Error deleting task:", error);
+            // Show error message if deletion fails
+            toast.error("Failed to delete task");
+          }
+        }
+      };
 
       return (
         <DropdownMenu>
@@ -158,16 +172,11 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
-              Copy User ID
+              Copy Task ID
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                setAlertDialog(true);
-                dispatch(setUserlist(user.id));
-              }}
-            >
-              Delete
-            </DropdownMenuItem>{" "}
+            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
+              Delete Task
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -175,6 +184,7 @@ export const columns: ColumnDef<User>[] = [
   },
 ];
 
+// Define the main component
 export function DataTableDemo() {
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -182,23 +192,12 @@ export function DataTableDemo() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [alertDialog, setAlertDialog] = useState(false);
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
 
-  const confirmDelete = async (id) => {
-    const response = await axios.delete(`/api/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${user.data.token}`,
-      },
-    });
-    queryClient.invalidateQueries("users");
-    toast.success("user deleted successfully");
-  };
-
-  // Fetch data from API
+  // Fetch tasks from API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTasks = async () => {
       setLoading(true);
       try {
         const response = await axios.get("/api/tasks", {
@@ -206,18 +205,18 @@ export function DataTableDemo() {
             Authorization: `Bearer ${user.token}`,
           },
         });
-        console.log(response.data.data); // Check if roles are included
-
-        setData(response.data.data);
+        setData(response.data.data.Task);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching tasks:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchTasks();
   }, []);
+
+  // Handle task deletion
 
   const table = useReactTable({
     data,
@@ -247,53 +246,28 @@ export function DataTableDemo() {
               <h2 className="text-2xl font-bold tracking-tight">
                 Task Manager
               </h2>
-              <p className="text-muted-foreground">
-                You can add new task here.
-              </p>
+              <p className="text-muted-foreground">Manage your tasks here.</p>
             </div>
-            <div>{/* <TaskNav /> */}</div>
           </div>
-
-          {/* Filter Input */}
-          <div className="flex items-center py-4">
-            <Input
-              placeholder="Filter Task..."
-              value={
-                (table.getColumn("priority")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("priority")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <AddTask />
+          <div className="grid grid-cols-2 ">
+            <div className="flex items-center py-2">
+              <Input
+                placeholder="Filter Tasks..."
+                value={
+                  (table.getColumn("priority")?.getFilterValue() as string) ??
+                  ""
+                }
+                onChange={(event) =>
+                  table
+                    .getColumn("priority")
+                    ?.setFilterValue(event.target.value)
+                }
+                className="max-w-sm"
+              />
+            </div>
+            <div>
+              <AddTask />
+            </div>
           </div>
 
           {/* Table */}
@@ -341,39 +315,13 @@ export function DataTableDemo() {
                         colSpan={columns.length}
                         className="h-24 text-center"
                       >
-                        No task found.
+                        No tasks found.
                       </TableCell>
                     </TableRow>
                   )}
                 </TableBody>
               </Table>
             )}
-          </div>
-
-          {/* Pagination and Row Selection Info */}
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
           </div>
         </div>
       </main>

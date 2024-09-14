@@ -24,17 +24,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const priorities = ["Low", "Medium", "High"];
-const statuses = ["Not Started", "In Progress", "Completed"];
+const statuses = ["Not Started", "In Progress"];
 
 const AddTask = () => {
   const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState("");
-  const [title, setTitle] = React.useState("");
+  // const [title, setTitle] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [status, setStatus] = React.useState("");
+  const [assignedUser, setAssignedUser] = React.useState("");
+  const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
+
+  React.useEffect(() => {
+    axios
+      .get("/api/users", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      .then((response) => {
+        console.log("Fetched users:", response.data.data);
+        setUsers(response.data.data.Users);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch users", error);
+      });
+  }, [user.token]);
 
   const register = () => {
     axios
@@ -45,7 +63,7 @@ const AddTask = () => {
           description,
           priority,
           weight,
-          assign_to: "member",
+          assign_to: assignedUser,
           status,
           start_date: "11/11/1111",
           end_date: "11/11/1111",
@@ -101,9 +119,8 @@ const AddTask = () => {
                   onChange={(event) => setDescription(event.target.value)}
                 />
               </div>
-
               <div>
-                <Label htmlFor="weight">Weight</Label>
+                <Label htmlFor="weight">Weight (in hrs)</Label>
                 <Input
                   id="weight"
                   placeholder="Weight"
@@ -113,7 +130,6 @@ const AddTask = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  {/* <Label htmlFor="status">Status</Label> */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline">
@@ -134,7 +150,6 @@ const AddTask = () => {
                   </DropdownMenu>
                 </div>
                 <div>
-                  {/* <Label htmlFor="priority">Priority</Label> */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline">
@@ -154,6 +169,27 @@ const AddTask = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
+              </div>
+              <div>
+                <Label htmlFor="assignedUser">Assign To</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      {assignedUser || "Select User"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Assign To</DropdownMenuLabel>
+                    {users?.map((user) => (
+                      <DropdownMenuItem
+                        key={user.name}
+                        onClick={() => setAssignedUser(user.id)}
+                      >
+                        {user.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
             <DialogFooter>

@@ -81,17 +81,15 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
@@ -110,8 +108,6 @@ export const columns: ColumnDef<User>[] = [
             },
           });
           toast.success("User deleted successfully!");
-          window.location.reload(); // Optional: Show success message
-
           // Remove the deleted user from the state
           setData((prevData) => prevData.filter((user) => user.id !== id));
         } catch (error) {
@@ -134,11 +130,7 @@ export const columns: ColumnDef<User>[] = [
             >
               Copy User ID
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                handleDelete(user.id);
-              }}
-            >
+            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
               Delete
             </DropdownMenuItem>{" "}
           </DropdownMenuContent>
@@ -155,18 +147,29 @@ export function DataTableDemo() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
   const [alertDialog, setAlertDialog] = useState(false);
   const getitem = localStorage.getItem("user");
   const users = JSON.parse(getitem);
 
-  const confirmDelete = async (id) => {
-    const response = await axios.delete(`/api/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${user.data.token}`,
-      },
-    });
-    queryClient.invalidateQueries("users");
-    toast.success("user deleted successfully");
+  const confirmDelete = async (ids: string[]) => {
+    try {
+      await Promise.all(
+        ids.map((id) =>
+          axios.delete(`/api/users/${id}`, {
+            headers: {
+              Authorization: `Bearer ${users.token}`,
+            },
+          })
+        )
+      );
+      toast.success("Users deleted successfully");
+      // Fetch the updated list
+      fetchData();
+    } catch (error) {
+      console.error("Error deleting users:", error);
+      toast.error("Failed to delete users");
+    }
   };
 
   // Fetch data from API
@@ -179,7 +182,6 @@ export function DataTableDemo() {
             Authorization: `Bearer ${users.token}`,
           },
         });
-
         setData(response.data.data.Users);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -201,7 +203,10 @@ export function DataTableDemo() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: (newSelection) => {
+      setRowSelection(newSelection);
+      setSelectedRowIds(new Set(newSelection.map((row) => row.original.id)));
+    },
     state: {
       sorting,
       columnFilters,
@@ -252,20 +257,18 @@ export function DataTableDemo() {
                 {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
               </DropdownMenuContent>
             </DropdownMenu>
             <AddUser />
@@ -276,52 +279,66 @@ export function DataTableDemo() {
             {loading ? (
               <p>Loading...</p>
             ) : (
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
+              <>
+                <Table>
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                          </TableHead>
                         ))}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No users found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          No users found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+
+                {/* Conditional Delete Button */}
+                {selectedRowIds.size > 0 && (
+                  <div className="flex justify-end py-4">
+                    <Button
+                      variant="destructive"
+                      onClick={() => confirmDelete([...selectedRowIds])}
+                    >
+                      Delete Selected
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
