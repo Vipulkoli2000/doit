@@ -18,28 +18,30 @@ import { CirclePlus } from "lucide-react";
 const AddUser = () => {
   const [title, setTitle] = React.useState("");
   const [priority, setPriority] = React.useState("");
-  const [assign_to, setAssign_to] = React.useState("");
+  const [status, setStatus] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   const register = () => {
     axios
       .post(
         "/api/tasks",
         {
-          id: "111",
           title: title,
-          project_id: "111",
           description: "description",
           priority: priority,
           weight: "1",
           status: "todo",
           start_date: "2023-01-01",
           end_date: "2023-01-01",
-          created_at: "2023-01-01",
-          updated_at: "2023-01-01",
-          assign_to: "yash",
         },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       )
       .then((response) => {
         toast.success("Task created successfully.");
@@ -93,13 +95,13 @@ const AddUser = () => {
             </div>
 
             <div>
-              <Label htmlFor="assign_to">Assign to</Label>
+              <Label htmlFor="status">Status</Label>
               <Input
-                type="assign_to"
-                id="assign_to"
-                placeholder="Assign Task "
-                value={assign_to}
-                onChange={(event) => setAssign_to(event.target.value)}
+                type="status"
+                id="status"
+                placeholder="Status"
+                value={status}
+                onChange={(event) => setStatus(event.target.value)}
               />
             </div>
           </div>

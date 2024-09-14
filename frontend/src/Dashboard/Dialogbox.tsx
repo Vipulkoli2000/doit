@@ -23,7 +23,7 @@ const Dialogbox = () => {
           <DialogHeader>
             <DialogTitle>Add</DialogTitle>
             <DialogDescription>
-              Add the Task Here. Click save when you're done.
+              Add the Task Here. Click save when youre done.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

@@ -54,12 +54,14 @@ export default function UserAuthForm() {
   });
 
   const postData = usePostData({
-    endpoint: "http://localhost:8000/api/login", // Change to the actual login API
+    endpoint: "/api/login", // Change to the actual login API
+
     params: {
       retry: 0,
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Login Successful!");
         navigate("/dashboard");
+        localStorage.setItem("user", JSON.stringify(data.data.data));
       },
       onError: (error: AxiosError) => {
         toast.error(error.response?.data?.message || "Login failed");

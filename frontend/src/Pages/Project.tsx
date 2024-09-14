@@ -17,7 +17,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { UserNav } from "./Users/UserNav";
 import AddProject from "./Projects/AddProject";
 import { Button } from "@/components/ui/button";
-// import toast from "sonner";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -39,10 +39,10 @@ import {
 } from "@/components/ui/table";
 
 export type User = {
-  id: string;
+  // id: string;
   name: string;
   description: string;
-  email: string;
+  // email: string;
 };
 
 // Define your columns
@@ -101,6 +101,28 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
+      const getitem = localStorage.getItem("user");
+      const users = JSON.parse(getitem);
+      const handleDelete = async (id: string) => {
+        try {
+          await axios.delete(`/api/projects/${id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${users.token}`,
+            },
+          });
+          toast.success("Project deleted successfully!");
+          window.location.reload(); // Optional: Show success message
+
+          // Remove the deleted project from the state
+          setData((prevData) =>
+            prevData.filter((project) => project.id !== id)
+          );
+        } catch (error) {
+          console.error("Error deleting project:", error);
+          toast.error("Failed to delete project"); // Optional: Show error message
+        }
+      };
 
       return (
         <DropdownMenu>
@@ -115,12 +137,11 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
-              Copy User ID
+              Copy Project ID
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setAlertDialog(true);
-                dispatch(setUserlist(user.id));
+                handleDelete(user.id);
               }}
             >
               Delete
@@ -140,31 +161,29 @@ export function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [alertDialog, setAlertDialog] = useState(false);
-
-  const confirmDelete = async (id) => {
-    const response = await axios.delete(`/api//${id}`, {
-      headers: {
-        Authorization: `Bearer ${user.data.token}`,
-      },
-    });
-    queryClient.invalidateQueries("users");
-    toast.success("user deleted successfully");
-  };
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/projects");
-        setData(response.data.data);
+        const response = await axios.get("/api/projects", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
+
+        console.log(response.data.data.Projects);
+
+        setData(response.data.data.Projects);
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching projects data:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -209,10 +228,10 @@ export function DataTableDemo() {
             <Input
               placeholder="Filter Projects..."
               value={
-                (table.getColumn("email")?.getFilterValue() as string) ?? ""
+                (table.getColumn("name")?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("email")?.setFilterValue(event.target.value)
+                table.getColumn("name")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />

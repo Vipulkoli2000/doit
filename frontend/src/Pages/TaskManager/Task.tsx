@@ -183,6 +183,8 @@ export function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [alertDialog, setAlertDialog] = useState(false);
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   const confirmDelete = async (id) => {
     const response = await axios.delete(`/api/users/${id}`, {
@@ -199,7 +201,11 @@ export function DataTableDemo() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/tasks");
+        const response = await axios.get("/api/tasks", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         console.log(response.data.data); // Check if roles are included
 
         setData(response.data.data);

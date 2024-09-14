@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 const AddProject = () => {
   const [description, setDescription] = React.useState("");
@@ -20,8 +20,16 @@ const AddProject = () => {
   const [name, setName] = React.useState("");
   const [open, setOpen] = React.useState(false);
   // const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   const register = () => {
+    if (!name || !description) {
+      toast.error("Name is required", {
+        duration: 1000,
+      });
+      return;
+    }
     axios
       .post(
         "/api/projects",
@@ -29,10 +37,15 @@ const AddProject = () => {
           name: name,
           description: description,
         },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       )
       .then((response) => {
-        toast.success("User created successfully.");
+        toast.success("Project created successfully.");
         setOpen(false);
         window.location.reload();
       })
@@ -41,8 +54,16 @@ const AddProject = () => {
         console.log(error);
       });
   };
+  // Handle form submission on Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default behavior
+      register(); // Trigger form submission
+    }
+  };
   return (
     <div>
+      <Toaster position="top-center" richColors />
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
         <DialogTrigger asChild>
           <Button variant="outline">Add Project</Button>
@@ -63,6 +84,7 @@ const AddProject = () => {
                 placeholder="Name"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </div>
             <div>
@@ -73,6 +95,7 @@ const AddProject = () => {
                 placeholder="Description"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </div>
           </div>

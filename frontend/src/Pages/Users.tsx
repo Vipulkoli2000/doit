@@ -140,6 +140,8 @@ export function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [alertDialog, setAlertDialog] = useState(false);
+  const getitem = localStorage.getItem("user");
+  const users = JSON.parse(getitem);
 
   const confirmDelete = async (id) => {
     const response = await axios.delete(`/api/users/${id}`, {
@@ -156,8 +158,13 @@ export function DataTableDemo() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/users");
-        setData(response.data.data);
+        const response = await axios.get("/api/users", {
+          headers: {
+            Authorization: `Bearer ${users.token}`,
+          },
+        });
+
+        setData(response.data.data.Users);
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {

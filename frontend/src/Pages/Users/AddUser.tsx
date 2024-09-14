@@ -21,18 +21,25 @@ const AddUser = () => {
   // const [role, setRole] = React.useState("");
   const [open, setOpen] = React.useState(false);
   // const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   const register = () => {
     axios
       .post(
-        "/api/register",
+        "/api/users",
         {
           name: name,
           email: email,
           password: password,
           // roles: role,
         },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: {
+            "Content-Type": "application/json ",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       )
       .then((response) => {
         toast.success("User created successfully.");

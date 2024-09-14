@@ -19,26 +19,33 @@ const AddTask = () => {
   const [priority, setPriority] = React.useState("");
   const [title, setTitle] = React.useState("");
   const [weight, setWeight] = React.useState("");
-  const [assignTo, setAssignTo] = React.useState("");
+  const [status, setStatus] = React.useState("");
+  // const [assignTo, setAssignTo] = React.useState("");
   const [open, setOpen] = React.useState(false);
   // const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   const register = () => {
     axios
       .post(
         "/api/tasks",
         {
-          project_id: "1",
           title: title,
           description: description,
           priority: priority,
           weight: weight,
-          assign_to: assignTo,
-          status: "todo",
-          start_date: "",
-          end_date: "",
+          assign_to: "member",
+          status: status,
+          start_date: "11/11/1111",
+          end_date: "11/11/1111",
         },
-        { headers: { "Content-Type": "application/json" } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       )
       .then((response) => {
         toast.success("User created successfully.");
@@ -105,13 +112,13 @@ const AddTask = () => {
               />
             </div>
             <div>
-              <Label htmlFor="assignTo">Assign To</Label>
+              <Label htmlFor="status">Status</Label>
               <Input
-                type="assignTo"
-                id="assignTo"
-                placeholder="Assign the task"
-                value={assignTo}
-                onChange={(event) => setAssignTo(event.target.value)}
+                type="status"
+                id="status"
+                placeholder="Status"
+                value={status}
+                onChange={(event) => setStatus(event.target.value)}
               />
             </div>
           </div>
