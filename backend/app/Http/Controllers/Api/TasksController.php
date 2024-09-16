@@ -133,4 +133,34 @@ class TasksController extends BaseController
         return $this->sendResponse(['Task'=> TaskResource::collection($tasks)], "Projects retrived successfuly");
 
     }
+
+
+  
+    public function search(Request $request)
+    {
+        // Retrieve query parameters
+        $title = $request->query('title');
+        $description = $request->query('description');
+
+        // Initialize query
+        $query = Task::query();
+
+        // Apply filters based on query parameters
+        if ($title) {
+            $query->where('title', 'like', "%$title%");
+        }
+
+        if ($description) {
+            $query->where('description', 'like', "%$description%");
+        }
+
+        // Execute query and get results
+        $SearchedTask = $query->get();
+
+        // Return results, possibly as JSON for an API response
+       return $this->sendResponse(['SearchedTask'=> TaskResource::collection($SearchedTask)], 'data retrived successfully');
+    }
+
+
+
 }
