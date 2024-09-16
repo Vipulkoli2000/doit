@@ -12,29 +12,63 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
-import { toast } from "sonner";
 import { CirclePlus } from "lucide-react";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const AddUser = () => {
-  const [title, setTitle] = React.useState("");
+const priorities = ["Low", "Medium", "High"];
+const statuses = ["Not Started", "In Progress"];
+const weights = ["0", "0.25", "0.50", "0.75", "1.00"];
+
+const AddTask = () => {
+  const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState("");
+  // const [title, setTitle] = React.useState("");
+  const [weight, setWeight] = React.useState("");
   const [status, setStatus] = React.useState("");
+  const [assignedUser, setAssignedUser] = React.useState("");
+  const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
+
+  React.useEffect(() => {
+    axios
+      .get("/api/users", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      .then((response) => {
+        console.log("Fetched users:", response.data.data);
+        setUsers(response.data.data.Users);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch users", error);
+      });
+  }, [user.token]);
 
   const register = () => {
     axios
       .post(
         "/api/tasks",
         {
-          title: title,
-          description: "description",
-          priority: priority,
-          weight: "1",
-          status: "todo",
-          start_date: "2023-01-01",
-          end_date: "2023-01-01",
+          // title,
+          description,
+          priority,
+          weight,
+          assign_to: assignedUser,
+          status: "In Progress",
+          start_date: "11/11/1111",
+          end_date: "11/11/1111",
         },
         {
           headers: {
@@ -43,18 +77,20 @@ const AddUser = () => {
           },
         }
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Task created successfully.");
         setOpen(false);
+        window.location.reload();
       })
       .catch((error) => {
-        toast.error("Failed to create Task.");
-        console.log(error);
+        toast.error("Failed to create task.");
+        console.error(error);
       });
   };
+
   return (
     <div>
-      <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger>
           <Button
             variant="outline"
@@ -63,57 +99,145 @@ const AddUser = () => {
           >
             <CirclePlus className="mr-2 h-4 w-4" />
             Add Task
-          </Button>
+          </Button>{" "}
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Task</DialogTitle>
-            <DialogDescription>
-              You can add new task here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div>
-              <Label htmlFor="title">Title</Label>
-              <Input
-                type="title"
-                id="title"
-                placeholder="Title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-              />
+          <ScrollArea>
+            <DialogHeader>
+              <DialogTitle>Add Task</DialogTitle>
+              <DialogDescription>
+                You can add new tasks here. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              {/* <div>
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  placeholder="Title"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                />
+              </div> */}
+              <div>
+                <Textarea
+                  id="description"
+                  placeholder="Description/Task"
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="weight">Weight</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      className="flex w-full sm:w-60 md:w-80 gap-2"
+                      variant="outline"
+                    >
+                      {weight || "Select Weight"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Weight</DropdownMenuLabel>
+                    {weights.map((item) => (
+                      <DropdownMenuItem
+                        key={item}
+                        onClick={() => setWeight(item)}
+                      >
+                        {item}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {/* <div>
+                  <Label
+                    htmlFor="status"
+                    className="block md-2 justify-items-center"
+                  >
+                    Status
+                  </Label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button className="" variant="outline">
+                        {status || "Select Status"}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>Status</DropdownMenuLabel>
+                      {statuses.map((item) => (
+                        <DropdownMenuItem
+                          key={item}
+                          onClick={() => setStatus(item)}
+                        >
+                          {item}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div> */}
+                <div>
+                  <Label htmlFor="priority">Priority</Label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="flex w-full sm:w-60 md:w-80"
+                        variant="outline"
+                      >
+                        {priority || "Select Priority"}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>Priority</DropdownMenuLabel>
+                      {priorities.map((item) => (
+                        <DropdownMenuItem
+                          key={item}
+                          onClick={() => setPriority(item)}
+                        >
+                          {item}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="assignedUser">Assign To</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      className="flex w-full sm:w-60 md:w-80 gap-2"
+                      variant="outline"
+                    >
+                      {assignedUser || "Select User"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Assign To</DropdownMenuLabel>
+                    {users?.map((user) => (
+                      <DropdownMenuItem
+                        key={user.name}
+                        onClick={() => setAssignedUser(user.id)}
+                      >
+                        {user.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="priority">Priority</Label>
-              <Input
-                type="priority"
-                id="priority"
-                placeholder="Priority will be High, Medium, Low..."
-                value={priority}
-                onChange={(event) => setPriority(event.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Input
-                type="status"
-                id="status"
-                placeholder="Status"
-                value={status}
-                onChange={(event) => setStatus(event.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={register} type="submit">
-              Save changes
-            </Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button onClick={register} type="button">
+                Save changes
+              </Button>
+            </DialogFooter>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
   );
 };
 
-export default AddUser;
+export default AddTask;

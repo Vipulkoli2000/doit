@@ -69,7 +69,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: "Description/Tasks",
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("description")}</div>
     ),
@@ -158,6 +158,22 @@ export const columns: ColumnDef<User>[] = [
           }
         }
       };
+      // const handleUpdate = async (id: string) => {
+      //   // if (window.confirm("Are you sure you want to update this task?")) {
+      //   //   setOpen(true);
+      //   // }
+      //   try {
+      //     const response = await axios.get(`/api/tasks/${id}`, {
+      //       headers: {
+      //         Authorization: `Bearer ${users.token}`,
+      //       },
+      //     });
+      //     setTask(response.data.data.Task);
+      //     setOpen(true);
+      //   } catch (error) {
+      //     console.error("Error fetching task:", error);
+      //   }
+      // };
 
       return (
         <DropdownMenu>
@@ -177,6 +193,9 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuItem onClick={() => handleDelete(user.id)}>
               Delete Task
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleUpdate(user.id)}>
+              Update Task
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -194,6 +213,7 @@ export function DataTableDemo() {
   const [rowSelection, setRowSelection] = useState({});
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
+  const [task, setTask] = useState<Task>({});
 
   // Fetch tasks from API
   useEffect(() => {
@@ -265,7 +285,7 @@ export function DataTableDemo() {
                 className="max-w-sm"
               />
             </div>
-            <div>
+            <div className="flex flex-row-reverse items-center py-2">
               <AddTask />
             </div>
           </div>

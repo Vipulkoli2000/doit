@@ -25,6 +25,7 @@ import {
 
 const priorities = ["Low", "Medium", "High"];
 const statuses = ["Not Started", "In Progress"];
+const weights = ["0", "0.25", "0.50", "0.75", "1.00"];
 
 const AddTask = () => {
   const [description, setDescription] = React.useState("");
@@ -63,7 +64,7 @@ const AddTask = () => {
           description,
           priority,
           weight,
-          assign_to: assignedUser,
+          assignedUser,
           status,
           start_date: "11/11/1111",
           end_date: "11/11/1111",
@@ -111,28 +112,48 @@ const AddTask = () => {
                 />
               </div> */}
               <div>
-                <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  placeholder="Description"
+                  placeholder="Description/Task"
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
                 />
               </div>
               <div>
-                <Label htmlFor="weight">Weight (in hrs)</Label>
-                <Input
-                  id="weight"
-                  placeholder="Weight"
-                  value={weight}
-                  onChange={(event) => setWeight(event.target.value)}
-                />
+                <Label htmlFor="weight">Weight</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      className="flex w-full sm:w-60 md:w-80 gap-2"
+                      variant="outline"
+                    >
+                      {weight || "Select Weight"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Weight</DropdownMenuLabel>
+                    {weights.map((item) => (
+                      <DropdownMenuItem
+                        key={item}
+                        onClick={() => setWeight(item)}
+                      >
+                        {item}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
+                  <Label
+                    htmlFor="status"
+                    className="block md-2 justify-items-center"
+                  >
+                    Status
+                  </Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
+                      <Button className="" variant="outline">
                         {status || "Select Status"}
                       </Button>
                     </DropdownMenuTrigger>
@@ -150,6 +171,12 @@ const AddTask = () => {
                   </DropdownMenu>
                 </div>
                 <div>
+                  <Label
+                    htmlFor="priority"
+                    className="block md-2 justify-items-center"
+                  >
+                    Priority
+                  </Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline">
@@ -174,7 +201,10 @@ const AddTask = () => {
                 <Label htmlFor="assignedUser">Assign To</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
+                    <Button
+                      className="flex w-full sm:w-60 md:w-80 gap-2"
+                      variant="outline"
+                    >
                       {assignedUser || "Select User"}
                     </Button>
                   </DropdownMenuTrigger>
@@ -182,8 +212,8 @@ const AddTask = () => {
                     <DropdownMenuLabel>Assign To</DropdownMenuLabel>
                     {users?.map((user) => (
                       <DropdownMenuItem
-                        key={user.name}
-                        onClick={() => setAssignedUser(user.id)}
+                        key={user.id}
+                        onClick={() => setAssignedUser(user.name)}
                       >
                         {user.name}
                       </DropdownMenuItem>
