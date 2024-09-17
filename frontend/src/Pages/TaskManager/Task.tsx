@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import { DataTablePagination } from "../../tasks/components/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -96,7 +97,7 @@ export const columns: ColumnDef<User>[] = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Weight
+        Weight(hrs)
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
@@ -273,7 +274,7 @@ export function DataTableDemo() {
             </div>
           </div>
           <div className="grid grid-cols-2 ">
-            <div className="flex items-center py-2 ">
+            <div className="flex items-center py-2  ">
               <Input
                 placeholder="Filter Tasks..."
                 value={
@@ -348,6 +349,7 @@ export function DataTableDemo() {
             )}
           </div>
         </div>
+        <DataTablePagination table={table} />
       </main>
     </div>
   );

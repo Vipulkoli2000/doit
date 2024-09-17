@@ -66,7 +66,7 @@ const AddTask = () => {
           priority,
           weight,
           assign_to,
-          status,
+          // status,
           start_date: "11/11/1111",
           end_date: "11/11/1111",
         },
@@ -121,7 +121,7 @@ const AddTask = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="weight">Weight</Label>
+                <Label htmlFor="weight">Weight(hrs)</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -144,8 +144,7 @@ const AddTask = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              {/* <div>
                   <Label
                     htmlFor="status"
                     className="block md-2 justify-items-center"
@@ -170,33 +169,35 @@ const AddTask = () => {
                       ))}
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-                <div>
-                  <Label
-                    htmlFor="priority"
-                    className="block md-2 justify-items-center"
-                  >
-                    Priority
-                  </Label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
-                        {priority || "Select Priority"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuLabel>Priority</DropdownMenuLabel>
-                      {priorities.map((item) => (
-                        <DropdownMenuItem
-                          key={item}
-                          onClick={() => setPriority(item)}
-                        >
-                          {item}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+                </div> */}
+              <div>
+                <Label
+                  htmlFor="priority"
+                  className="block md-4 justify-items-center"
+                >
+                  Priority
+                </Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      className="flex w-full sm:w-60 md:w-80 gap-2"
+                      variant="outline"
+                    >
+                      {priority || "Select Priority"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Priority</DropdownMenuLabel>
+                    {priorities.map((item) => (
+                      <DropdownMenuItem
+                        key={item}
+                        onClick={() => setPriority(item)}
+                      >
+                        {item}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div>
                 <Label htmlFor="assign_to">Assign To</Label>
@@ -213,10 +214,10 @@ const AddTask = () => {
                     <DropdownMenuLabel>Assign To</DropdownMenuLabel>
                     {users?.map((user) => (
                       <DropdownMenuItem
-                        key={user.id}
+                        key={user.name}
                         onClick={() => setAssign_to(user.id)}
                       >
-                        {user.id}
+                        {user.name}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
