@@ -13,12 +13,14 @@ import {
 } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import AddTask from "./AddTask";
+import UpdateTask from "./Updatetask";
+import FilterPriority from "./FilterPriority";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  DropdownMenu,
+  DropdownMenu, 
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -87,7 +89,7 @@ export const columns: ColumnDef<User>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("priority")}</div>
+      <div className="capitalize">{row.getValue("priority")}</div>
     ),
   },
   {
@@ -102,7 +104,7 @@ export const columns: ColumnDef<User>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("weight")}</div>
+      <div className="capitalize">{row.getValue("weight")}hrs</div>
     ),
   },
 
@@ -119,7 +121,7 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const assign_to = row.getValue("assign_to");
-      return <div className="lowercase">{assign_to}</div>;
+      return <div className="capitalize">{assign_to}</div>;
     },
   },
   {
@@ -186,15 +188,19 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
+              className="justify-center"
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
               Copy Task ID
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
+            <DropdownMenuItem
+              className="justify-center"
+              onClick={() => handleDelete(user.id)}
+            >
               Delete Task
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleUpdate(user.id)}>
-              Update Task
+            <DropdownMenuItem asChild>
+              <UpdateTask taskId={user.id} initialTaskData={user} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -214,6 +220,14 @@ export function DataTableDemo() {
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
   const [task, setTask] = useState<Task>({});
+  //filter
+  const [priorityFilter, setPriorityFilter] = React.useState("");
+
+  React.useEffect(() => {
+    if (priorityFilter) {
+      table.getColumn("priority")?.setFilterValue(priorityFilter);
+    }
+  }, [priorityFilter]);
 
   // Fetch tasks from API
   useEffect(() => {
@@ -273,8 +287,9 @@ export function DataTableDemo() {
               <p className="text-muted-foreground">Manage your tasks here.</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 ">
-            <div className="flex items-center py-2  ">
+          <div className="grid grid-cols-3 items-center py-2 gap-4">
+            {/* Left: Filter Tasks Input */}
+            <div className="flex items-center">
               <Input
                 placeholder="Filter Tasks..."
                 value={
@@ -290,7 +305,13 @@ export function DataTableDemo() {
               />
             </div>
 
-            <div className="flex flex-row-reverse items-center py-2">
+            {/* Center: Filter Priority Button */}
+            <div className="">
+              <FilterPriority setPriorityFilter={setPriorityFilter} />
+            </div>
+
+            {/* Right: Add Task Button */}
+            <div className="flex justify-end">
               <AddTask />
             </div>
           </div>

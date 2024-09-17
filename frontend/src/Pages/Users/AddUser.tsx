@@ -91,10 +91,10 @@ const AddUser = () => {
                 type="password"
                 id="password"
                 placeholder="Password"
-                value={password}
+                value={password || ""}
                 onChange={(event) => setPassword(event.target.value)}
               />
-            </div>
+            </div>  
             {/* <div>
               <Label htmlFor="role">Role</Label>
               <Input

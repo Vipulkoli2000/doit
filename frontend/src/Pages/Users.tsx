@@ -43,6 +43,7 @@ export type User = {
   name: string;
   role: string;
   email: string;
+  password: string;
 };
 
 // Define your columns
@@ -90,7 +91,24 @@ export const columns: ColumnDef<User>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("email")}</div>
+    ),
+  },
+  {
+    accessorKey: "password",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Password
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("password")}</div>
+    ),
   },
   {
     id: "actions",
