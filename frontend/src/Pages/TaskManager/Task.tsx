@@ -40,7 +40,7 @@ export type User = {
   description: string;
   priority: string;
   weight: number;
-  assignedUser: string;
+  assign_to: string;
 };
 
 // Define your columns
@@ -104,8 +104,9 @@ export const columns: ColumnDef<User>[] = [
       <div className="lowercase">{row.getValue("weight")}</div>
     ),
   },
+
   {
-    accessorKey: "assignedUser",
+    accessorKey: "assign_to",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -116,10 +117,8 @@ export const columns: ColumnDef<User>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const assignedUser = row.getValue("assignedUser");
-      return (
-        <div className="lowercase">{assignedUser || "No user assigned"}</div>
-      );
+      const assign_to = row.getValue("assign_to");
+      return <div className="lowercase">{assign_to}</div>;
     },
   },
   {
@@ -220,11 +219,15 @@ export function DataTableDemo() {
     const fetchTasks = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/api/tasks", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
+        const response = await axios.get(
+          "/api/tasks",
+
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
         setData(response.data.data.Task);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -270,7 +273,7 @@ export function DataTableDemo() {
             </div>
           </div>
           <div className="grid grid-cols-2 ">
-            <div className="flex items-center py-2">
+            <div className="flex items-center py-2 ">
               <Input
                 placeholder="Filter Tasks..."
                 value={
@@ -285,6 +288,7 @@ export function DataTableDemo() {
                 className="max-w-sm"
               />
             </div>
+
             <div className="flex flex-row-reverse items-center py-2">
               <AddTask />
             </div>

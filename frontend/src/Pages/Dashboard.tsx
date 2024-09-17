@@ -10,8 +10,8 @@ const Dashboard = () => {
     <div className="flex bg-background ">
       <Sidebar />
       <main className="w-full flex-1 overflow-hidden bg-black px-4 ">
-        <Pagess />
-        {/* <Task /> */}
+        {/* <Pagess /> */}
+        <Task />
       </main>
     </div>
   );

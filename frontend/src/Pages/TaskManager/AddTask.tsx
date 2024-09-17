@@ -33,7 +33,8 @@ const AddTask = () => {
   // const [title, setTitle] = React.useState("");
   const [weight, setWeight] = React.useState("");
   const [status, setStatus] = React.useState("");
-  const [assignedUser, setAssignedUser] = React.useState("");
+  // const [assignedUser, setAssignedUser] = React.useState("");
+  const [assign_to, setAssign_to] = React.useState("");
   const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const getitem = localStorage.getItem("user");
@@ -64,7 +65,7 @@ const AddTask = () => {
           description,
           priority,
           weight,
-          assignedUser,
+          assign_to,
           status,
           start_date: "11/11/1111",
           end_date: "11/11/1111",
@@ -198,14 +199,14 @@ const AddTask = () => {
                 </div>
               </div>
               <div>
-                <Label htmlFor="assignedUser">Assign To</Label>
+                <Label htmlFor="assign_to">Assign To</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       className="flex w-full sm:w-60 md:w-80 gap-2"
                       variant="outline"
                     >
-                      {assignedUser || "Select User"}
+                      {assign_to || "Select User"}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -213,9 +214,9 @@ const AddTask = () => {
                     {users?.map((user) => (
                       <DropdownMenuItem
                         key={user.id}
-                        onClick={() => setAssignedUser(user.name)}
+                        onClick={() => setAssign_to(user.id)}
                       >
-                        {user.name}
+                        {user.id}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
