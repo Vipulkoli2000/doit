@@ -26,8 +26,8 @@ class TaskSubmissionsController extends BaseController
         if($authUser == "admin"){
         //    $taskSubmission = TaskSubmission::with("users")->get();   
            $taskSubmission = TaskSubmission::all();   //this also gonna display users cause we are sending users from resource.  
-        }else if($authUser == "member"){
-            $taskSubmission = auth()->user()->with("taskSubmissions.users")->get();
+        }else if($authUser == "member"){   
+            $taskSubmission = auth()->user()->taskSubmissions()->get();
         }
 
         return $this->sendResponse(['TaskSubmissions'=> TaskSubmissionResource::collection($taskSubmission)], "Task Submissions retrived successfully");

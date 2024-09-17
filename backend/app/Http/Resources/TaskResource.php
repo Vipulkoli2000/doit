@@ -28,7 +28,7 @@ class TaskResource extends JsonResource
             'end_date' => $this->end_date->format("Y-m-d"),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            "users" => $users,
+            "assign_to" => $users->pluck("name"),
         ];
 
     }

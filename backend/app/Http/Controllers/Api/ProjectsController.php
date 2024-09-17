@@ -22,11 +22,11 @@ class ProjectsController extends BaseController
        
         $authUser = auth()->user()->roles->pluck('name')->first();
         if($authUser == 'admin'){
-            $projects = Project::with('users')->get();
+            $projects = Project::all();
 
         } elseif($authUser == 'member'){
             // $projects = auth()->user()->projects()->users()->get();  //auth()->user()->projects()->users()->get();   or auth()->user()->projects()->with("users")->get();
-            $user = auth()->user()->with('projects.users')->get();  //this is efficient way
+            $user = auth()->user()->projects()->get();  //this is efficient way
         }
       
         return $this->sendResponse(['Projects'=> ProjectResource::collection($projects)], "Projects retrived successfuly");

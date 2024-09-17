@@ -20,10 +20,10 @@ class TasksController extends BaseController
     {
         $authUser = auth()->user()->roles->pluck('name')->first();
         if($authUser == 'admin'){
-            $tasks = Task::with("users")->get();
-
+            $tasks = Task::all();
+               //i am sending realted users fron the resurce file
         } elseif($authUser == 'member'){
-             $tasks = auth()->user()->with("tasks.users")->get();  //auth()->user()->tasks()->users()->get();   or auth()->user()->tasks()->with("users")->get();
+             $tasks = auth()->user()->tasks()->get();  //auth()->user()->tasks()->users()->get();   or auth()->user()->tasks()->with("users")->get();
 
         }
            //should we give only one variable called data in every api?
@@ -141,17 +141,39 @@ class TasksController extends BaseController
         // Retrieve query parameters
         $title = $request->query('title');
         $description = $request->query('description');
+        $priority = $request->query('priority');
+        $weight = $request->query('weight');
+        $status = $request->query('status');
 
-        // Initialize query
-        $query = Task::query();
+        $authUser = auth()->user()->roles->pluck("name")->first();
+        if($authUser == "admin"){
+            // Initialize query
+            $query = Task::query();
+        }
+        elseif($authUser == "member"){
+            $query = auth()->user()->tasks();
+        }
+       
 
-        // Apply filters based on query parameters
+        // Apply filters based on query parameters priority, weight status, start date and enddate
         if ($title) {
             $query->where('title', 'like', "%$title%");
         }
 
         if ($description) {
             $query->where('description', 'like', "%$description%");
+        }
+
+        if ($priority) {
+            $query->where('priority', 'like', "%$priority%");
+        }
+
+        if ($weight) {
+            $query->where('weight', 'like', "%$weight%");
+        }
+
+        if ($status) {
+            $query->where('status', 'like', "%$status%");
         }
 
         // Execute query and get results
