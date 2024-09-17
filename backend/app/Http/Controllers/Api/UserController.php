@@ -99,13 +99,9 @@ class UserController extends BaseController
        $user->password = Hash::make($request->input('password'));
        $user->save();
        
-       if($request->has('role')){
-        $role = $request->input('role');
-        $memberRole = Role::where("name", $role)->first();
-       }
-       else{
+     
         $memberRole = Role::where("name", 'member')->first();
-       }
+    
       
        $user->assignRole($memberRole);
       
@@ -121,13 +117,9 @@ class UserController extends BaseController
        $user->password = Hash::make($request->input('password'));
        $user->save();
        
-       if($request->has('role')){
-        $role = $request->input('role');
-        $memberRole = Role::where("name", $role)->first();
-       }
-       else{
+      
         $memberRole = Role::where("name", 'member')->first();
-       }
+    
       
        $user->assignRole($memberRole);
       
