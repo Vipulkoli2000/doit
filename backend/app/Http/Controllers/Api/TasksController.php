@@ -45,11 +45,17 @@ class TasksController extends BaseController
         $task->start_date = $request->input('start_date');
         $task->end_date = $request->input('end_date');
         $task->save();
-
-        if($request->has('assign_to')){
-            $user_id = $request->input('assign_to');
-            $task->users()->attach($user_id);
-        }
+        
+        $authUser = auth()->user()->roles->pluck('name')->first();
+          if($authUser == "admin"){
+            if($request->has('assign_to')){
+                $user_id = $request->input('assign_to');
+                $task->users()->attach($user_id);
+            }
+          }elseif($authUser == "member"){
+            $task->users()->attach($auth()->id);
+          }
+       
 
         return $this->sendResponse(['Task'=> new TaskResource($task)], "Tasks Stored Successfully");
     }
