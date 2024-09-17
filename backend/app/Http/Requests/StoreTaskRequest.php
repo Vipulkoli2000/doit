@@ -28,7 +28,7 @@ class StoreTaskRequest extends FormRequest
              'status' => ['nullable', 'string'],
              'start_date'=> [ 'nullable','date'],
              'end_date' => [ 'nullable','date', 'after_or_equal:start_date'],
-             'assign_to' => ['required'],
+             'assign_to' => ['nullable'],
         ];
     }
 }

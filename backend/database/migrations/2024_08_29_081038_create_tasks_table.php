@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string("description")->nullable();
             $table->string("priority")->nullable();
             $table->string("weight")->nullable();
-            $table->string('status')->default("pending");
+            $table->string('status')->nullable();
             $table->date("start_date")->nullable();
             $table->date("end_date")->nullable();
             $table->timestamps();
