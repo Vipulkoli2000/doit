@@ -26,8 +26,8 @@ const AddUser = () => {
 
   const register = () => {
     axios
-      .post(
-        "/api/users",
+      .put(
+        "/api/users/{id}",
         {
           name: name,
           email: email,
@@ -55,13 +55,14 @@ const AddUser = () => {
     <div>
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
         <DialogTrigger asChild>
-          <Button variant="outline">Add User</Button>
+          <p>Reset User</p>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add User</DialogTitle>
             <DialogDescription>
-              You can add new users here. Click save when you're done.
+              You can update/reset existing users here. Click save when you're
+              done.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

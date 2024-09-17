@@ -115,7 +115,7 @@ export default function UserAuthForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-2 "
+          className="w-full space-y-2"
         >
           <FormField
             control={form.control}
@@ -162,7 +162,7 @@ export default function UserAuthForm() {
           <Button
             disabled={isLoading}
             isLoading={isLoading}
-            className="ml-auto w-full flex gap-2"
+            className="ml-auto w-full flex gap-2 "
             type="submit"
             variant="primaryAccent"
           >

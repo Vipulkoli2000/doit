@@ -16,6 +16,7 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { UserNav } from "./Users/UserNav";
 import AddUser from "./Users/AddUser";
+import Reset from "./Users/ResetUser";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -106,10 +107,9 @@ export const columns: ColumnDef<User>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("password")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("password")}</div>,
   },
+
   {
     id: "actions",
     enableHiding: false,
@@ -150,7 +150,10 @@ export const columns: ColumnDef<User>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleDelete(user.id)}>
               Delete
-            </DropdownMenuItem>{" "}
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Reset />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

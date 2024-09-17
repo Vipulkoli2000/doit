@@ -171,6 +171,7 @@ export function DataTableDemo() {
       try {
         const response = await axios.get("/api/projects", {
           headers: {
+            
             Authorization: `Bearer ${user.token}`,
           },
         });
