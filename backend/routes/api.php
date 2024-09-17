@@ -29,7 +29,8 @@ Route::group(['middleware'=>['auth:sanctum', 'permission']], function(){
    Route::delete('/users/{id}', [UserController::class, 'delete'])->name('users.delete');
    Route::get('/tasks/{projectId}', [TasksController::class, 'showProjectsTasks'])->name('tasks.showProjectsTasks');
    Route::get('/logout', [UserController::class, 'logout']);
-   Route::get('/search-tasks', [TasksController::class, 'search'])->name('tasks.search');
+   Route::get('/tasks-search', [TasksController::class, 'search'])->name('tasks.search');
+   Route::get('/projects-search', [TasksController::class, 'search'])->name('projects.search');
 
   
 });

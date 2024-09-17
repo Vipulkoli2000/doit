@@ -105,4 +105,39 @@ class ProjectsController extends BaseController
 
         return $this->sendResponse([], "project deleted successfully");
     }
+
+    public function search(Request $request): JsonResponse
+    {
+        // Retrieve query parameters
+        $name = $request->query('name');
+        $description = $request->query('description');
+      
+
+        $authUser = auth()->user()->roles->pluck("name")->first();
+        if($authUser == "admin"){
+            // Initialize query
+            $query = Project::query();
+        }
+        elseif($authUser == "member"){
+            $query = auth()->user()->projects();
+        }
+       
+
+        // Apply filters based on query parameters priority, weight status, start date and enddate
+        if ($name) {
+            $query->where('name', 'like', "%$name%");
+        }
+
+        if ($description) {
+            $query->where('description', 'like', "%$description%");
+        }
+
+
+        // Execute query and get results
+        $SearchedProjects = $query->get();
+       
+        // Return results, possibly as JSON for an API response
+       return $this->sendResponse(['SearchedProjects'=> ProjectResource::collection($SearchedProjects)], 'Projects searched successfully');
+    }
+
 }

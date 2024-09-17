@@ -35,6 +35,8 @@ const AddTask = () => {
   const [status, setStatus] = React.useState("");
   // const [assignedUser, setAssignedUser] = React.useState("");
   const [assign_to, setAssign_to] = React.useState("");
+  const [assignToName, setAssignToName] = React.useState("");
+
   const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const getitem = localStorage.getItem("user");
@@ -207,15 +209,17 @@ const AddTask = () => {
                       className="flex w-full sm:w-60 md:w-80 gap-2"
                       variant="outline"
                     >
-                      {assign_to || "Select User"}
+                      {assignToName || "Select User"}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Assign To</DropdownMenuLabel>
                     {users?.map((user) => (
-                      <DropdownMenuItem
+                      <DropdownMenuItem  className="flex w-full sm:w-60 md:w-80 gap-2"
+                      variant="outline"
                         key={user.name}
-                        onClick={() => setAssign_to(user.id)}
+                        onClick={() => {setAssign_to(user.id); setAssignToName(user.name);}}
+                      
                       >
                         {user.name}
                       </DropdownMenuItem>

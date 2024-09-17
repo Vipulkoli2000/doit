@@ -177,16 +177,16 @@ class TasksController extends BaseController
         if ($weight) {
             $query->where('weight', 'like', "%$weight%");
         }
-
+          
         if ($status) {
             $query->where('status', 'like', "%$status%");
         }
 
         // Execute query and get results
         $SearchedTask = $query->get();
-
+       
         // Return results, possibly as JSON for an API response
-       return $this->sendResponse(['SearchedTask'=> TaskResource::collection($SearchedTask)], 'data retrived successfully');
+       return $this->sendResponse(['SearchedTasks'=> TaskResource::collection($SearchedTask)], 'Tasks Searched successfully');
     }
 
 
