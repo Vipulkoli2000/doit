@@ -24,9 +24,9 @@ const AddProject = () => {
   const user = JSON.parse(getitem);
 
   const register = () => {
-    if (!name || !description) {
+    if (!name) {
       toast.error("Name is required", {
-        duration: 1000,
+        duration: 50,
       });
       return;
     }
@@ -47,7 +47,7 @@ const AddProject = () => {
       .then((response) => {
         toast.success("Project created successfully.");
         setOpen(false);
-        window.location.reload();
+        // window.location.reload();
       })
       .catch((error) => {
         toast.error("Failed to create user.");
