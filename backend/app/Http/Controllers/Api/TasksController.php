@@ -53,7 +53,7 @@ class TasksController extends BaseController
                 $task->users()->attach($user_id);
             }
           }elseif($authUser == "member"){
-            $task->users()->attach($auth()->id);
+            $task->users()->attach(auth()->id);
           }
        
 
