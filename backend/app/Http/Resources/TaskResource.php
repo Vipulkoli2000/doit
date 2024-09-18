@@ -26,12 +26,12 @@ class TaskResource extends JsonResource
             'priority' => $this->priority,
             'weight' => $this->weight,
             'status' => $this->status,
-            'start_date' => $this->start_date->format("Y-m-d"),
-            'end_date' => $this->end_date->format("Y-m-d"),
+            'start_date' => $this->start_date ? $this->start_date->format("Y-m-d") : null,
+            'end_date' => $this->end_date ? $this->end_date->format("Y-m-d") : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             "assign_to" => $users->pluck("name"),
-              'project' => $projects ? [$projects->name]: [null],
+            'project' => $projects ? [$projects->name]: [null],
         ];
 
     }
