@@ -16,6 +16,8 @@ class TaskResource extends JsonResource
     public function toArray(Request $request): array
     {
           $users = UserResource::collection($this->users);
+          $projects = $this->projects;
+
         return [
             'id' => $this->id,
             'project_id' => $this->project_id,
@@ -29,6 +31,7 @@ class TaskResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             "assign_to" => $users->pluck("name"),
+              'project' => $projects ? [$projects->name]: [null],
         ];
 
     }
