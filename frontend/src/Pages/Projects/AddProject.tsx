@@ -47,7 +47,7 @@ const AddProject = () => {
       .then((response) => {
         toast.success("Project created successfully.");
         setOpen(false);
-        // window.location.reload();
+        window.location.reload();
       })
       .catch((error) => {
         toast.error("Failed to create user.");

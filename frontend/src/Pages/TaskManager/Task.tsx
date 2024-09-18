@@ -15,12 +15,13 @@ import { flexRender } from "@tanstack/react-table";
 import AddTask from "./AddTask";
 import UpdateTask from "./Updatetask";
 import FilterPriority from "./FilterPriority";
+import FilterStatus from "./FilterStatus";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  DropdownMenu, 
+  DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -44,6 +45,8 @@ export type User = {
   priority: string;
   weight: number;
   assign_to: string;
+  project: string;
+  status: string;
 };
 
 // Define your columns
@@ -60,16 +63,47 @@ export const columns: ColumnDef<User>[] = [
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    cell: ({ row }) => {
+      const isChecked = row.getIsSelected();
+      const taskId = row.original.id;
+      const userToken = JSON.parse(localStorage.getItem("user") || "{}")?.token;
+
+      const handleStatusChange = async (checked: boolean) => {
+        try {
+          await axios.put(
+            `/api/tasks/${taskId}`,
+            {
+              status: checked ? "Done" : "In Progress",
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+          toast.success("Task status updated successfully.");
+        } catch (error) {
+          toast.error("Failed to update task status.");
+          console.error(error);
+        }
+      };
+
+      return (
+        <Checkbox
+          checked={isChecked}
+          onCheckedChange={(value) => {
+            handleStatusChange(!!value);
+            row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+        />
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   },
+
   {
     accessorKey: "description",
     header: "Description/Tasks",
@@ -104,7 +138,7 @@ export const columns: ColumnDef<User>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("weight")}hrs</div>
+      <div className="lowercase">{row.getValue("weight")}hrs</div>
     ),
   },
 
@@ -125,6 +159,38 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
+    accessorKey: "project",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Project
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const project = row.getValue("project");
+      return <div className="capitalize">{project}</div>;
+    },
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Status
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const status = row.getValue("status");
+      return <div className="capitalize">{status}</div>;
+    },
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
       const user = row.original;
@@ -137,10 +203,8 @@ export const columns: ColumnDef<User>[] = [
       }
 
       const handleDelete = async (id: string) => {
-        // Confirm the deletion with the user
         if (window.confirm("Are you sure you want to delete this task?")) {
           try {
-            // Make the API call to delete the task
             await axios.delete(`/api/tasks/${id}`, {
               headers: {
                 "Content-Type": "application/json",
@@ -148,14 +212,10 @@ export const columns: ColumnDef<User>[] = [
               },
             });
             window.location.reload();
-            // Update the state to remove the deleted task
             setData((prevData) => prevData.filter((task) => task.id !== id));
-
-            // Show success message
             toast.success("Task deleted successfully");
           } catch (error) {
             console.error("Error deleting task:", error);
-            // Show error message if deletion fails
             toast.error("Failed to delete task");
           }
         }
@@ -222,12 +282,18 @@ export function DataTableDemo() {
   const [task, setTask] = useState<Task>({});
   //filter
   const [priorityFilter, setPriorityFilter] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState("");
 
   React.useEffect(() => {
     if (priorityFilter) {
       table.getColumn("priority")?.setFilterValue(priorityFilter);
     }
   }, [priorityFilter]);
+  React.useEffect(() => {
+    if (statusFilter) {
+      table.getColumn("status")?.setFilterValue(statusFilter);
+    }
+  }, [statusFilter]);
 
   // Fetch tasks from API
   useEffect(() => {
@@ -288,35 +354,35 @@ export function DataTableDemo() {
             </div>
           </div>
           <div className="grid grid-cols-3 items-center py-2 gap-4">
-            {/* Left: Filter Tasks Input */}
             <div className="flex items-center">
               <Input
                 placeholder="Filter Tasks..."
                 value={
-                  (table.getColumn("priority")?.getFilterValue() as string) ??
+                  (table.getColumn("assign_to")?.getFilterValue() as string) ??
                   ""
                 }
                 onChange={(event) =>
                   table
-                    .getColumn("priority")
+                    .getColumn("assign_to")
                     ?.setFilterValue(event.target.value)
                 }
                 className="max-w-sm"
               />
             </div>
-
-            {/* Center: Filter Priority Button */}
-            <div className="">
-              <FilterPriority setPriorityFilter={setPriorityFilter} />
+            <div className="flex items-center gap-2">
+              <div className="">
+                <FilterPriority setPriorityFilter={setPriorityFilter} />
+              </div>
+              <div className="">
+                <FilterStatus setStatusFilter={setStatusFilter} />
+              </div>
             </div>
 
-            {/* Right: Add Task Button */}
             <div className="flex justify-end">
               <AddTask />
             </div>
           </div>
 
-          {/* Table */}
           <div className="rounded-md border">
             {loading ? (
               <p>Loading...</p>

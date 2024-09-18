@@ -35,11 +35,15 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
   );
   const [weight, setWeight] = React.useState(initialTaskData.weight || "");
   const [assign_to, setassign_to] = React.useState();
+  const [project_id, setProject_id] = React.useState("");
+  const [projectName, setProjectName] = React.useState("");
+  const [projects, setProjects] = React.useState([]);
   const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
 
+  // Fetch Users
   React.useEffect(() => {
     axios
       .get("/api/users", {
@@ -55,6 +59,22 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
       });
   }, [user.token]);
 
+  // Fetch Projects
+  React.useEffect(() => {
+    axios
+      .get("/api/projects", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      .then((response) => {
+        setProjects(response.data.data.Projects); // Update based on your API response structure
+      })
+      .catch((error) => {
+        console.error("Failed to fetch projects", error);
+      });
+  }, [user.token]);
+
   const updateTask = () => {
     axios
       .put(
@@ -67,6 +87,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
           status: "In Progress",
           start_date: "1111/11/11",
           end_date: "1111/11/11",
+          project_id,
         },
         {
           headers: {
@@ -84,6 +105,13 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
         toast.error("Failed to update task.");
         console.error(error);
       });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default behavior
+      updateTask(); // Trigger form submission
+    }
   };
 
   return (
@@ -112,16 +140,14 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                   placeholder="Description/Task"
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
               </div>
               <div>
                 <Label htmlFor="weight">Weight</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      className="flex w-full sm:w-60 md:w-80 gap-2"
-                      variant="outline"
-                    >
+                    <Button className="w-full" variant="outline">
                       {weight || "Select Weight"}
                     </Button>
                   </DropdownMenuTrigger>
@@ -139,13 +165,10 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                 </DropdownMenu>
               </div>
               <div>
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority_id">Priority</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      className="flex w-full sm:w-60 md:w-80"
-                      variant="outline"
-                    >
+                    <Button className="w-full" variant="outline">
                       {priority || "Select Priority"}
                     </Button>
                   </DropdownMenuTrigger>
@@ -166,10 +189,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                 <Label htmlFor="assign_to">Assign To</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      className="flex w-full sm:w-60 md:w-80 gap-2"
-                      variant="outline"
-                    >
+                    <Button className="w-full" variant="outline">
                       {assign_to || "Select User"}
                     </Button>
                   </DropdownMenuTrigger>
@@ -181,6 +201,31 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                         onClick={() => setassign_to(user.id)}
                       >
                         {user.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div>
+                <Label htmlFor="project_id">Project</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="w-full" variant="outline">
+                      {projectName || "Select Project"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Project</DropdownMenuLabel>
+                    {projects?.map((project) => (
+                      <DropdownMenuItem
+                        className="w-full"
+                        key={project.id}
+                        onClick={() => {
+                          setProject_id(project.id);
+                          setProjectName(project.name);
+                        }}
+                      >
+                        {project.name}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>

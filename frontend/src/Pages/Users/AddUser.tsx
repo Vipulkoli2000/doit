@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,14 +13,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react"; // Import Eye and EyeOff icons
 
 const AddUser = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
-  // const [role, setRole] = React.useState("");
-  const [open, setOpen] = React.useState(false);
-  // const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [open, setOpen] = useState(false);
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
 
@@ -32,11 +32,10 @@ const AddUser = () => {
           name: name,
           email: email,
           password: password,
-          // roles: role,
         },
         {
           headers: {
-            "Content-Type": "application/json ",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
           },
         }
@@ -51,6 +50,14 @@ const AddUser = () => {
         console.log(error);
       });
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      register();
+    }
+  };
+
   return (
     <div>
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
@@ -87,24 +94,28 @@ const AddUser = () => {
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                type="input"
-                id="password"
-                placeholder="Password"
-                value={password || ""}
-                onChange={(event) => setPassword(event.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"} // Toggle password visibility
+                  id="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-2"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
-            {/* <div>
-              <Label htmlFor="role">Role</Label>
-              <Input
-                type="roles"
-                id="roles"
-                placeholder="Define the role"
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-              />
-            </div> */}
           </div>
           <DialogFooter>
             <Button onClick={register} type="submit">

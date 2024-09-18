@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +9,20 @@ import { Button } from "@/components/ui/button";
 
 const priorities = ["Low", "Medium", "High"];
 
-
 const FilterPriority = ({ setPriorityFilter }) => {
+  const [selectedPriority, setSelectedPriority] = useState<string | null>(null);
+
+  const handlePrioritySelect = (priority: string) => {
+    setSelectedPriority(priority);
+    setPriorityFilter(priority);
+  };
+
+  const handleReset = () => {
+    setSelectedPriority(null);
+    setPriorityFilter(null); // Or set to a default value if necessary
+    window.location.reload(); // Reload the window
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -19,11 +32,13 @@ const FilterPriority = ({ setPriorityFilter }) => {
         {priorities.map((priority) => (
           <DropdownMenuItem
             key={priority}
-            onClick={() => setPriorityFilter(priority)}
+            onClick={() => handlePrioritySelect(priority)}
           >
             {priority}
           </DropdownMenuItem>
         ))}
+        {/* Reset Button */}
+        <DropdownMenuItem onClick={handleReset}>Reset Filter</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

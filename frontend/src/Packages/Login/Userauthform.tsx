@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/customButton";
 import {
   Form,
@@ -15,14 +15,15 @@ import { useForm } from "react-hook-form";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useFetchData } from "@/fetchcomponents/Fetchapi";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { usePostData } from "@/fetchcomponents/postapi";
-import { useNavigate } from "react-router-dom"; // Use for redirection after successful login
-import { Toaster } from "sonner";
-
+import { useNavigate } from "react-router-dom";
 import * as z from "zod";
+
+// Importing eye icons
+import { Eye, EyeOff } from "lucide-react";
 
 gsap.registerPlugin(useGSAP);
 
@@ -36,9 +37,10 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // Manage password visibility
   const queryClient = useQueryClient();
-  const navigate = useNavigate(); // Use navigate to redirect after login
-  const { data, isLoading, isFetching, isError } = useFetchData({
+  const navigate = useNavigate();
+  const { data, isLoading } = useFetchData({
     endpoint: "https://66d59c0ff5859a704266c935.mockapi.io/api/todo/todo",
     params: {
       queryKey: "todos",
@@ -82,7 +84,7 @@ export default function UserAuthForm() {
   const onSubmit = async (formData: UserFormValue) => {
     console.log("Form Data:", formData);
     queryClient.invalidateQueries({ queryKey: ["todos"] });
-    postData.mutate(formData); // Submit the form data for login
+    postData.mutate(formData);
   };
 
   useGSAP(() => {
@@ -101,12 +103,12 @@ export default function UserAuthForm() {
         position="top-center"
         richColors
         style={{
-          position: "fixed", // Ensure it's fixed and doesn't affect layout
+          position: "fixed",
           top: 0,
           left: "50%",
           transform: "translateX(-50%)",
-          zIndex: 9999, // High z-index so it appears above other content
-          pointerEvents: "none", // Allow interactions through the toaster
+          zIndex: 9999,
+          pointerEvents: "none",
         }}
         toastOptions={{
           duration: 3000,
@@ -146,13 +148,27 @@ export default function UserAuthForm() {
               <FormItem className="">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    isLoading={isLoading}
-                    type="password"
-                    placeholder="Enter your password..."
-                    disabled={isLoading}
-                    {...field}
-                  />
+                  <div className="relative">
+                    <Input
+                      isLoading={isLoading}
+                      type={isPasswordVisible ? "text" : "password"} // Toggle between text and password
+                      placeholder="Enter your password..."
+                      disabled={isLoading}
+                      {...field}
+                    />
+                    {/* Toggle button with eye icon */}
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                      onClick={() => setIsPasswordVisible((prev) => !prev)}
+                    >
+                      {isPasswordVisible ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -17,6 +17,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { UserNav } from "./Users/UserNav";
 import AddUser from "./Users/AddUser";
 import Reset from "./Users/ResetUser";
+import { Eye, EyeOff } from "lucide-react"; // Import eye icons
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -107,9 +108,30 @@ export const columns: ColumnDef<User>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("password")}</div>,
-  },
+    cell: ({ row }) => {
+      const [showPassword, setShowPassword] = useState(false); // Local state to track password visibility
 
+      return (
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-2"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {/* Toggle between Eye and EyeOff icon */}
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
+          {/* Conditionally show/hide password */}
+          <span>{showPassword ? row.getValue("password") : "••••••••"}</span>
+        </div>
+      );
+    },
+  },
   {
     id: "actions",
     enableHiding: false,
@@ -151,9 +173,8 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuItem onClick={() => handleDelete(user.id)}>
               Delete
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Reset />
-            </DropdownMenuItem>
+            <Reset />
+            <DropdownMenuItem></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -171,8 +192,8 @@ export function DataTableDemo() {
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
   const [alertDialog, setAlertDialog] = useState(false);
   const getitem = localStorage.getItem("user");
-  const users = JSON.parse(getitem);
 
+  const users = JSON.parse(getitem);
   const confirmDelete = async (ids: string[]) => {
     try {
       await Promise.all(

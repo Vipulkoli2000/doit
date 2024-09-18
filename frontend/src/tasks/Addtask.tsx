@@ -66,6 +66,7 @@ const AddTask = () => {
           priority,
           weight,
           assign_to,
+          project_id,
           status: "In Progress",
           start_date: "11/11/1111",
           end_date: "11/11/1111",
@@ -86,6 +87,12 @@ const AddTask = () => {
         toast.error("Failed to create task.");
         console.error(error);
       });
+  };
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default behavior
+      register(); // Trigger form submission
+    }
   };
 
   return (
@@ -125,6 +132,7 @@ const AddTask = () => {
                   placeholder="Description/Task"
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
               </div>
               <div>
@@ -132,7 +140,7 @@ const AddTask = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      className="flex w-full sm:w-60 md:w-80 gap-2"
+                      className="flex w-full sm:w-60 md:w-80 lg:w-96"
                       variant="outline"
                     >
                       {weight || "Select Weight"}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,62 +14,72 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { toast } from "sonner";
 
-const AddUser = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [name, setName] = React.useState("");
-  // const [role, setRole] = React.useState("");
-  const [open, setOpen] = React.useState(false);
-  // const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
-  const getitem = localStorage.getItem("user");
-  const user = JSON.parse(getitem);
+// Define the props type
+type AddUserProps = {
+  userId?: string; // Optional prop for user ID
+  initialUserData?: {
+    name: string;
+    email: string;
+    password: string;
+    // role: string; // Uncomment if you need role
+  };
+};
 
-  const register = () => {
-    axios
-      .put(
-        "/api/users/{id}",
+const AddUser: React.FC<AddUserProps> = ({ userId, initialUserData }) => {
+  const [email, setEmail] = useState<string>(initialUserData?.email || "");
+  const [password, setPassword] = useState<string>(
+    initialUserData?.password || ""
+  );
+  const [name, setName] = useState<string>(initialUserData?.name || "");
+  // const [role, setRole] = useState<string>(initialUserData?.role || ""); // Uncomment if needed
+  const [open, setOpen] = useState<boolean>(false);
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem || "{}");
+
+  const handleSubmit = async () => {
+    try {
+      await axios.put(
+        `/api/users/${userId}`,
         {
           name: name,
           email: email,
           password: password,
-          // roles: role,
+          // roles: role, // Uncomment if you need to handle roles
         },
         {
           headers: {
-            "Content-Type": "application/json ",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${user.token}`,
           },
         }
-      )
-      .then((response) => {
-        toast.success("User created successfully.");
-        setOpen(false);
-        window.location.reload();
-      })
-      .catch((error) => {
-        toast.error("Failed to create user.");
-        console.log(error);
-      });
+      );
+      toast.success("User updated successfully.");
+      setOpen(false); // Close dialog after success
+      // Refresh or update your user list here if needed
+    } catch (error) {
+      toast.error("Failed to update user.");
+      console.error(error);
+    }
   };
+
   return (
     <div>
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
         <DialogTrigger asChild>
-          <p>Reset User</p>
+          <Button variant="outline">Update User</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Add User</DialogTitle>
+            <DialogTitle>Update User</DialogTitle>
             <DialogDescription>
-              You can update/reset existing users here. Click save when you're
-              done.
+              Update the user details here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div>
               <Label htmlFor="name">Name</Label>
               <Input
-                type="name"
+                type="text"
                 id="name"
                 placeholder="Name"
                 value={name}
@@ -89,18 +99,18 @@ const AddUser = () => {
             <div>
               <Label htmlFor="password">Password</Label>
               <Input
-                type="input"
+                type="password"
                 id="password"
                 placeholder="Password"
-                value={password || ""}
+                value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
             </div>
             {/* <div>
               <Label htmlFor="role">Role</Label>
               <Input
-                type="roles"
-                id="roles"
+                type="text"
+                id="role"
                 placeholder="Define the role"
                 value={role}
                 onChange={(event) => setRole(event.target.value)}
@@ -108,7 +118,7 @@ const AddUser = () => {
             </div> */}
           </div>
           <DialogFooter>
-            <Button onClick={register} type="submit">
+            <Button onClick={handleSubmit} type="button">
               Save changes
             </Button>
           </DialogFooter>
