@@ -99,7 +99,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
       .then(() => {
         toast.success("Task updated successfully.");
         setOpen(false);
-        window.location.reload();
+        window.location.reload(); // Refresh the page
       })
       .catch((error) => {
         toast.error("Failed to update task.");

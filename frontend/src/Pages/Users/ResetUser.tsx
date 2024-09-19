@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react"; // Import eye icons
 
 // Define the props type
-type AddUserProps = {
+type UpdateUserProps = {
   userId?: string; // Optional prop for user ID
-  initialUserData?: {
+  user?: {
     name: string;
     email: string;
     password: string;
@@ -25,7 +26,8 @@ type AddUserProps = {
   };
 };
 
-const AddUser: React.FC<AddUserProps> = ({ userId, initialUserData }) => {
+const UpdateUser: React.FC<UpdateUserProps> = ({ userId, user }) => {
+  const initialUserData = user;
   const [email, setEmail] = useState<string>(initialUserData?.email || "");
   const [password, setPassword] = useState<string>(
     initialUserData?.password || ""
@@ -34,7 +36,8 @@ const AddUser: React.FC<AddUserProps> = ({ userId, initialUserData }) => {
   // const [role, setRole] = useState<string>(initialUserData?.role || ""); // Uncomment if needed
   const [open, setOpen] = useState<boolean>(false);
   const getitem = localStorage.getItem("user");
-  const user = JSON.parse(getitem || "{}");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const users = JSON.parse(getitem || "{}");
 
   const handleSubmit = async () => {
     try {
@@ -49,24 +52,29 @@ const AddUser: React.FC<AddUserProps> = ({ userId, initialUserData }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${users.token}`,
           },
         }
       );
       toast.success("User updated successfully.");
+      window.location.reload(); // Refresh the page after successful update
       setOpen(false); // Close dialog after success
       // Refresh or update your user list here if needed
+      setName("");
+      setEmail("");
+      setPassword("");
     } catch (error) {
       toast.error("Failed to update user.");
       console.error(error);
     }
   };
 
+ 
   return (
     <div>
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
         <DialogTrigger asChild>
-          <Button variant="outline">Update User</Button>
+          <Button variant="ghost">Update User</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -98,24 +106,27 @@ const AddUser: React.FC<AddUserProps> = ({ userId, initialUserData }) => {
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                placeholder="Password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-2"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
-            {/* <div>
-              <Label htmlFor="role">Role</Label>
-              <Input
-                type="text"
-                id="role"
-                placeholder="Define the role"
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-              />
-            </div> */}
           </div>
           <DialogFooter>
             <Button onClick={handleSubmit} type="button">
@@ -128,4 +139,4 @@ const AddUser: React.FC<AddUserProps> = ({ userId, initialUserData }) => {
   );
 };
 
-export default AddUser;
+export default UpdateUser;

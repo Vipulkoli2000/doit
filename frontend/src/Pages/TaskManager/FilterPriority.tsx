@@ -26,7 +26,7 @@ const FilterPriority = ({ setPriorityFilter }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Filter Priority</Button>
+        <Button variant="outline" className="border-dashed">Filter Priority</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {priorities.map((priority) => (

@@ -17,6 +17,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { UserNav } from "./Users/UserNav";
 import AddUser from "./Users/AddUser";
 import Reset from "./Users/ResetUser";
+import DeleteUser from "./Users/DeleteUsers";
 import { Eye, EyeOff } from "lucide-react"; // Import eye icons
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -137,24 +138,25 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
-      const getitem = localStorage.getItem("user");
-      const users = JSON.parse(getitem);
-      const handleDelete = async (id: string) => {
-        try {
-          await axios.delete(`/api/users/${id}`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${users.token}`,
-            },
-          });
-          toast.success("User deleted successfully!");
-          // Remove the deleted user from the state
-          setData((prevData) => prevData.filter((user) => user.id !== id));
-        } catch (error) {
-          console.error("Error deleting user:", error);
-          toast.error("Failed to delete user"); // Optional: Show error message
-        }
-      };
+      console.log(user);
+      // const getitem = localStorage.getItem("user");
+      // const users = JSON.parse(getitem);
+      // const handleDelete = async (id: string) => {
+      //   try {
+      //     await axios.delete(`/api/users/${id}`, {
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Authorization: `Bearer ${users.token}`, // Assumes `users.token` contains the auth token
+      //       },
+      //     });
+      //     toast.success("User deleted successfully!");
+      //     // Remove the deleted user from the state
+      //   } catch (error) {
+      //     console.error("Error deleting user:", error);
+      //     toast.error("Failed to delete user");
+      //   }
+      // };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -170,10 +172,10 @@ export const columns: ColumnDef<User>[] = [
             >
               Copy User ID
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
-              Delete
+            <DropdownMenuItem userId={user.id} user={user}>
+              <DeleteUser />
             </DropdownMenuItem>
-            <Reset />
+            <Reset userId={user.id} user={user} />
             <DropdownMenuItem></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

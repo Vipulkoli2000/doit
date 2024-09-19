@@ -18,7 +18,7 @@ import FilterPriority from "./FilterPriority";
 import FilterStatus from "./FilterStatus";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -247,17 +247,20 @@ export const columns: ColumnDef<User>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               className="justify-center"
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
               Copy Task ID
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="justify-center"
-              onClick={() => handleDelete(user.id)}
-            >
-              Delete Task
+            </DropdownMenuItem> */}
+            <DropdownMenuItem>
+              <Button
+                variant="ghost"
+                className="text-sm px-2 py-1"
+                onClick={() => handleDelete(user.id)}
+              >
+                Delete Task
+              </Button>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateTask taskId={user.id} initialTaskData={user} />
@@ -341,8 +344,86 @@ export function DataTableDemo() {
     },
   });
 
+  const handlePaste = async (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const pastedText = event.clipboardData.getData("text");
+    const sentences = pastedText
+      .split("\n")
+      .map((sentence) => sentence.trim())
+      .filter((sentence) => sentence.length > 0);
+
+    for (const sentence of sentences) {
+      try {
+        await axios.post(
+          "/api/tasks",
+          { description: sentence },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        toast.success(`Task added: ${sentence}`);
+        window.location.reload();
+      } catch (error) {
+        toast.error(`Failed to add task: ${sentence}`);
+        console.error("Error adding task:", error);
+      }
+    }
+    await fetchTasks();
+  };
+
+  const [description, setDescription] = React.useState("");
+  const [descriptionError, setDescriptionError] = React.useState("");
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default behavior
+      register(); // Trigger form submission
+    }
+  };
+  const register = () => {
+    if (!description.trim()) {
+      toast.error("Task description is required.");
+      return;
+    }
+    axios
+      .post(
+        "/api/tasks",
+        {
+          description,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+
+      .then(() => {
+        localStorage.setItem("toastMessage", "Task created successfully.");
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      })
+      .catch((error) => {
+        localStorage.setItem("toastMessage", "Failed to create task.");
+        console.error(error);
+      });
+  };
+  useEffect(() => {
+    const message = localStorage.getItem("toastMessage");
+    if (message) {
+      toast(message);
+      localStorage.removeItem("toastMessage");
+    }
+  }, []);
+
   return (
     <div className="flex bg-background">
+      <Toaster position="top-center" richColors></Toaster>
       <main className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
         <div className="w-full">
           <div className="flex items-center justify-between space-y-2">
@@ -381,6 +462,25 @@ export function DataTableDemo() {
             <div className="flex justify-end">
               <AddTask />
             </div>
+          </div>
+          <div>
+            <Input
+              placeholder="Type here  ..."
+              autoFocus
+              onPaste={handlePaste}
+              className="mb-2 w-full border-0"
+              style={{}}
+              id="description"
+              value={description}
+              onChange={(event) => {
+                setDescription(event.target.value);
+                if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
+              }}
+              onKeyDown={handleKeyDown}
+            />
+            {descriptionError && (
+              <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
+            )}
           </div>
 
           <div className="rounded-md border">
@@ -436,6 +536,7 @@ export function DataTableDemo() {
             )}
           </div>
         </div>
+
         <DataTablePagination table={table} />
       </main>
     </div>

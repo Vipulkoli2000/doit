@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const priorities = ["In Progress", "Done", "All"];
+const priorities = ["In Progress", "Done", "Incomplete", "All"];
 
 const FilterStatus = ({ setStatusFilter }) => {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -25,7 +25,9 @@ const FilterStatus = ({ setStatusFilter }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Filter Status</Button>
+        <Button variant="outline" className="border-dashed">
+          Filter Status
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {priorities.map((status) => (

@@ -1,48 +1,12 @@
-import React from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  import React from "react";
+  import { Button } from "@/components/ui/button";
 
-const ConfirmDelete = ({ onConfirm, alertDialog, setAlertDialog }) => {
-  return (
-    <AlertDialog open={alertDialog} onOpenChange={setAlertDialog}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. By Clicking on Confirm. I confirm that
-            i want to delete this insurance policy.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel
-            onClick={() => {
-              window.location.reload(true);
-              setAlertDialog(false);
-            }}
-          >
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => {
-              window.location.reload(true);
-              onConfirm();
-            }}
-          >
-            Continue
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
+  const DeleteUsers = () => {
+    return (
+      <div>
+        <Button variant="ghost">Delete Users</Button>
+      </div>
+    );
+  };
 
-export default ConfirmDelete;
+  export default DeleteUsers;

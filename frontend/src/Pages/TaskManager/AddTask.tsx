@@ -21,17 +21,17 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { ArrowUpDown } from "lucide-react";
+// import { ArrowUpDown } from "lucide-react";
 
 const priorities = ["Low", "Medium", "High"];
-const statuses = ["Not Started", "In Progress"];
-const weights = ["0", "0.25", "0.50", "0.75", "1.00"];
+// const statuses = ["Not Started", "In Progress"];
+const weights = ["0.25", "0.50", "0.75", "1.00"];
 
 const AddTask = () => {
   const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState("");
   const [weight, setWeight] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  // const [status, setStatus] = React.useState("");
   const [assign_to, setAssign_to] = React.useState("");
   const [assignToName, setAssignToName] = React.useState("");
   const [project_id, setProject_id] = React.useState("");
@@ -39,6 +39,7 @@ const AddTask = () => {
   const [projects, setProjects] = React.useState([]);
   const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
+  const [descriptionError, setDescriptionError] = React.useState("");
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -90,6 +91,10 @@ const AddTask = () => {
   }, []);
 
   const register = () => {
+    if (!description.trim()) {
+      setDescriptionError("Description is required");
+      return;
+    }
     const getitem = localStorage.getItem("user");
     const user = JSON.parse(getitem);
 
@@ -116,8 +121,8 @@ const AddTask = () => {
         )
         .then(() => {
           toast.success("Task created successfully.");
-
           setOpen(false);
+          window.location.reload(); // Refresh the page
         })
         .catch((error) => {
           toast.error("Failed to create task.");
@@ -158,9 +163,17 @@ const AddTask = () => {
                   id="description"
                   placeholder="Description/Task"
                   value={description}
-                  onChange={(event) => setDescription(event.target.value)}
+                  onChange={(event) => {
+                    setDescription(event.target.value);
+                    if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
+                  }}
                   onKeyDown={handleKeyDown}
                 />
+                {descriptionError && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {descriptionError}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="weight">Weight (hrs)</Label>

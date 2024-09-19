@@ -78,6 +78,7 @@ const AddTask = () => {
           },
         }
       )
+
       .then(() => {
         toast.success("Task created successfully.");
         setOpen(false);
