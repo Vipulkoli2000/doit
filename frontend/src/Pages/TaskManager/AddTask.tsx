@@ -21,17 +21,16 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-// import { ArrowUpDown } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const priorities = ["Low", "Medium", "High"];
-// const statuses = ["Not Started", "In Progress"];
 const weights = ["0.25", "0.50", "0.75", "1.00"];
 
 const AddTask = () => {
   const [description, setDescription] = React.useState("");
   const [priority, setPriority] = React.useState("");
   const [weight, setWeight] = React.useState("");
-  // const [status, setStatus] = React.useState("");
   const [assign_to, setAssign_to] = React.useState("");
   const [assignToName, setAssignToName] = React.useState("");
   const [project_id, setProject_id] = React.useState("");
@@ -40,6 +39,8 @@ const AddTask = () => {
   const [users, setUsers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [descriptionError, setDescriptionError] = React.useState("");
+  const [startDate, setStartDate] = React.useState(null);
+  const [endDate, setEndDate] = React.useState(null);
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -107,8 +108,8 @@ const AddTask = () => {
             priority,
             weight,
             assign_to,
-            start_date: "11/11/1111",
-            end_date: "11/11/1111",
+            start_date: startDate?.toISOString(), // Send start date in ISO format
+            end_date: endDate?.toISOString(), // Send end date in ISO format
             project_id,
             status: "In Progress",
           },
@@ -136,7 +137,8 @@ const AddTask = () => {
   const projectMap = new Map(
     projects.map((project) => [project.id, project.name])
   );
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default behavior
       register(); // Trigger form submission
@@ -197,12 +199,7 @@ const AddTask = () => {
                 </DropdownMenu>
               </div>
               <div>
-                <Label
-                  htmlFor="priority"
-                  className="block md-4 justify-items-center"
-                >
-                  Priority
-                </Label>
+                <Label htmlFor="priority">Priority</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button className="w-full" variant="outline">
@@ -272,13 +269,36 @@ const AddTask = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="start_date">Start Date</Label>
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    className="w-full border rounded bg-transparent p-2"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select Start Date"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end_date">End Date</Label>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    className="w-full border rounded bg-transparent p-2"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select End Date"
+                    minDate={startDate}
+                  />
+                </div>
+              </div>
             </div>
-            <DialogFooter>
-              <Button onClick={register} type="button">
-                Save changes
-              </Button>
-            </DialogFooter>
           </ScrollArea>
+          <DialogFooter>
+            <Button type="submit" onClick={register}>
+              Save
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

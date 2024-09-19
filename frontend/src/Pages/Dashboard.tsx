@@ -9,7 +9,7 @@ const Dashboard = () => {
   return (
     <div className="flex bg-background ">
       <Sidebar />
-      <main className="w-full flex-1 overflow-hidden bg-black px-4 ">
+      <main className="w-full flex-1  bg-black px-4 ">
         {/* <Pagess /> */}
         <Task />
       </main>

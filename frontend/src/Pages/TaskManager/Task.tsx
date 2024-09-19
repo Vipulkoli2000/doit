@@ -16,9 +16,12 @@ import AddTask from "./AddTask";
 import UpdateTask from "./Updatetask";
 import FilterPriority from "./FilterPriority";
 import FilterStatus from "./FilterStatus";
+import { Label } from "@/components/ui/label";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
+import DatePicker from "react-datepicker";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -65,29 +68,6 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const isChecked = row.getIsSelected();
-      const taskId = row.original.id;
-      const userToken = JSON.parse(localStorage.getItem("user") || "{}")?.token;
-
-      const handleStatusChange = async (checked: boolean) => {
-        try {
-          await axios.put(
-            `/api/tasks/${taskId}`,
-            {
-              status: checked ? "Done" : "In Progress",
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${userToken}`,
-              },
-            }
-          );
-          toast.success("Task status updated successfully.");
-        } catch (error) {
-          toast.error("Failed to update task status.");
-          console.error(error);
-        }
-      };
 
       return (
         <Checkbox
@@ -108,9 +88,15 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "description",
     header: "Description/Tasks",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("description")}</div>
+      <div
+        className="truncate max-w-xs capitalize"
+        title={row.getValue("description")}
+      >
+        {row.getValue("description")}
+      </div>
     ),
   },
+
   {
     accessorKey: "priority",
     header: ({ column }) => (
@@ -373,9 +359,19 @@ export function DataTableDemo() {
     }
     await fetchTasks();
   };
+  const weights = ["0.25", "0.50", "0.75", "1.00"];
 
   const [description, setDescription] = React.useState("");
   const [descriptionError, setDescriptionError] = React.useState("");
+  const [weight, setWeight] = React.useState("");
+  const [assignToName, setAssignToName] = React.useState("");
+  const [users, setUsers] = React.useState([]);
+  const [assign_to, setAssign_to] = React.useState("");
+  const [projectName, setProjectName] = React.useState("");
+  const [projects, setProjects] = React.useState([]);
+  const [project_id, setProject_id] = React.useState("");
+  const [startDate, setStartDate] = React.useState(null);
+  const [endDate, setEndDate] = React.useState(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -393,6 +389,11 @@ export function DataTableDemo() {
         "/api/tasks",
         {
           description,
+          weight,
+          assign_to,
+          project_id,
+          start_date: startDate?.toISOString(), // Send start date in ISO format
+          end_date: endDate?.toISOString(), // Send end date in ISO format
         },
         {
           headers: {
@@ -420,6 +421,53 @@ export function DataTableDemo() {
       localStorage.removeItem("toastMessage");
     }
   }, []);
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const getItem = localStorage.getItem("user");
+        const user = JSON.parse(getItem);
+
+        if (user && user.token) {
+          const response = await axios.get("/api/users", {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+          setUsers(response.data.data.Users);
+        } else {
+          console.error("User token not found.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+  React.useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const getItem = localStorage.getItem("user");
+        const user = JSON.parse(getItem);
+
+        if (user && user.token) {
+          const response = await axios.get("/api/projects", {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+
+          setProjects(response.data.data.Projects);
+        } else {
+          console.error("User token not found.");
+        }
+      } catch (error) {
+        console.error("Failed to fetch projects", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   return (
     <div className="flex bg-background">
@@ -434,7 +482,7 @@ export function DataTableDemo() {
               <p className="text-muted-foreground">Manage your tasks here.</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 items-center py-2 gap-4">
+          <div className="grid grid-cols-3 items-center py-2 gap-4]">
             <div className="flex items-center">
               <Input
                 placeholder="Filter Tasks..."
@@ -463,12 +511,12 @@ export function DataTableDemo() {
               <AddTask />
             </div>
           </div>
-          <div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 ">
             <Input
               placeholder="Type here  ..."
               autoFocus
               onPaste={handlePaste}
-              className="mb-2 w-full border-0"
+              className="mb-2 w-full sm:w-3/4 md:w-2/3 lg:w-3/4 border-0 text-sm"
               style={{}}
               id="description"
               value={description}
@@ -481,6 +529,101 @@ export function DataTableDemo() {
             {descriptionError && (
               <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
             )}
+            <div className="grid grid-cols-5 gap-0 justify-items-center">
+              <div>
+                {/* <Label htmlFor="weight">Weight (hrs)</Label> */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="border-dashed " variant="ghost">
+                      {weight || "Weight(hrs)"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Weight</DropdownMenuLabel>
+                    {weights.map((item) => (
+                      <DropdownMenuItem
+                        key={item}
+                        onClick={() => setWeight(item)}
+                      >
+                        {item}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div>
+                {/* <Label htmlFor="assign_to">Assign To</Label> */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="border-dashed " variant="ghost">
+                      {assignToName || "Users"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Assign To</DropdownMenuLabel>
+                    {users?.map((user) => (
+                      <DropdownMenuItem
+                        className="w-full"
+                        key={user.id}
+                        onClick={() => {
+                          setAssign_to(user.id);
+                          setAssignToName(user.name);
+                        }}
+                      >
+                        {user.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div>
+                {/* <Label htmlFor="project_id">Project</Label> */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="" variant="ghost">
+                      {projectName || "Project"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Project</DropdownMenuLabel>
+                    {projects?.map((project) => (
+                      <DropdownMenuItem
+                        className="w-full"
+                        key={project.id}
+                        onClick={() => {
+                          setProject_id(project.id);
+                          setProjectName(project.name);
+                        }}
+                      >
+                        {project.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <div>
+                {/* <Label htmlFor="start_date">Start Date</Label> */}
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  className="w-full  rounded bg-transparent p-2"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Start Date"
+                />
+              </div>
+              <div>
+                {/* <Label htmlFor="end_date">End Date</Label> */}
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  className="  w-full rounded bg-transparent p-2"
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="End Date"
+                  minDate={startDate}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="rounded-md border">
