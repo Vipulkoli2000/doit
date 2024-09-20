@@ -42,6 +42,7 @@ class CreateMemberUserSeeder extends Seeder
             "taskSubmissions.update",
             "taskSubmissions.destroy",
             "show.files",
+            "user.logout",
         ];
         // $adminRole->givePermissionTo($permissions);
 

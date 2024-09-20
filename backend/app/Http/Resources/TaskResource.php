@@ -17,6 +17,7 @@ class TaskResource extends JsonResource
     {
           $users = UserResource::collection($this->users);
           $projects = $this->projects;
+          $comments = TaskSubmissionResource::collection($this->taskSubmissions);
 
         return [
             'id' => $this->id,
@@ -32,6 +33,7 @@ class TaskResource extends JsonResource
             'updated_at' => $this->updated_at,
             "assign_to" => $users->pluck("name"),
             'project' => $projects ? [$projects->name]: [null],
+            'comments' => $comments ? $comments : [null],
         ];
 
     }
