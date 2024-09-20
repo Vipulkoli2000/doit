@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { BadgePlus } from "lucide-react";
 
 const priorities = ["Low", "Medium", "High"];
 const weights = ["0.25", "0.50", "0.75", "1.00"];
@@ -108,8 +109,8 @@ const AddTask = () => {
             priority,
             weight,
             assign_to,
-            start_date: startDate?.toISOString(), // Send start date in ISO format
-            end_date: endDate?.toISOString(), // Send end date in ISO format
+            start_date: startDate?.toISOString(),
+            end_date: endDate?.toISOString(),
             project_id,
             status: "In Progress",
           },
@@ -123,7 +124,7 @@ const AddTask = () => {
         .then(() => {
           toast.success("Task created successfully.");
           setOpen(false);
-          window.location.reload(); // Refresh the page
+          // window.location.reload(); 
         })
         .catch((error) => {
           toast.error("Failed to create task.");
@@ -134,14 +135,10 @@ const AddTask = () => {
     }
   };
 
-  const projectMap = new Map(
-    projects.map((project) => [project.id, project.name])
-  );
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Prevent default behavior
-      register(); // Trigger form submission
+      e.preventDefault();
+      register();
     }
   };
 
@@ -149,16 +146,18 @@ const AddTask = () => {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">Add Task</Button>
+          <Button variant="outline">
+            Add Task <BadgePlus className=" ml-2" />
+          </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[390px]">
-          <ScrollArea>
-            <DialogHeader>
-              <DialogTitle>Add Task</DialogTitle>
-              <DialogDescription>
-                You can add new tasks here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
+        <DialogContent className="sm:max-w-[390px] xl:max-h-[100vh]">
+          <DialogHeader>
+            <DialogTitle>Add Task</DialogTitle>
+            <DialogDescription>
+              You can add new tasks here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[400px] overflow-y-auto  ">
             <div className="grid gap-4 py-4">
               <div>
                 <Textarea
@@ -167,7 +166,7 @@ const AddTask = () => {
                   value={description}
                   onChange={(event) => {
                     setDescription(event.target.value);
-                    if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
+                    if (descriptionError) setDescriptionError("");
                   }}
                   onKeyDown={handleKeyDown}
                 />

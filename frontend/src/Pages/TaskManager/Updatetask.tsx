@@ -9,10 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import axios from "axios";
-import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -22,6 +18,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import DatePicker from "react-datepicker";
+import axios from "axios";
 
 const priorities = ["Low", "Medium", "High"];
 const weights = ["0", "0.25", "0.50", "0.75", "1.00"];
@@ -34,14 +34,41 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
     initialTaskData.priority || ""
   );
   const [weight, setWeight] = React.useState(initialTaskData.weight || "");
-  const [assign_to, setassign_to] = React.useState();
-  const [project_id, setProject_id] = React.useState("");
-  const [projectName, setProjectName] = React.useState("");
-  const [projects, setProjects] = React.useState([]);
+  const [assign_to, setAssignTo] = React.useState(
+    initialTaskData.assign_to || ""
+  );
+  const [assignToName, setAssignToName] = React.useState(
+    initialTaskData.assignToName || "" // Keep this for display purposes
+  );
+  const [project_id, setProject_id] = React.useState(
+    initialTaskData.project_id || ""
+  );
+  const [projectName, setProjectName] = React.useState(
+    initialTaskData.projectName || ""
+  );
+  const [start_date, setStartDate] = React.useState(
+    initialTaskData.start_date || null // Use null as the initial value
+  );
+  const [end_date, setEndDate] = React.useState(initialTaskData.end_date || "");
+
   const [users, setUsers] = React.useState([]);
+  const [projects, setProjects] = React.useState([]);
   const [open, setOpen] = React.useState(false);
+  // const [end_date, setEndDate] = React.useState(
+  //   initialTaskData.end_date || null
+  // );
+
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
+  
+  React.useEffect(() => {
+    if (assign_to) {
+      const selectedUser = users.find((user) => user.id === assign_to);
+      if (selectedUser) {
+        setAssignToName(selectedUser.name);  
+      }
+    }
+  }, [assign_to, users]);  
 
   // Fetch Users
   React.useEffect(() => {
@@ -68,7 +95,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
         },
       })
       .then((response) => {
-        setProjects(response.data.data.Projects); // Update based on your API response structure
+        setProjects(response.data.data.Projects);
       })
       .catch((error) => {
         console.error("Failed to fetch projects", error);
@@ -84,10 +111,10 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
           priority,
           weight,
           assign_to,
-          status: "In Progress",
-          start_date: "1111/11/11",
-          end_date: "1111/11/11",
+          start_date,
+          end_date,
           project_id,
+          status: "In Progress",
         },
         {
           headers: {
@@ -107,7 +134,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
       });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevent default behavior
       updateTask(); // Trigger form submission
@@ -120,7 +147,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
         <DialogTrigger>
           <Button
             variant="outline"
-            className="  border-transparent justify-center"
+            className="border-transparent justify-center"
           >
             Update Task
           </Button>
@@ -143,6 +170,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                   onKeyDown={handleKeyDown}
                 />
               </div>
+
               <div>
                 <Label htmlFor="weight">Weight</Label>
                 <DropdownMenu>
@@ -165,7 +193,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                 </DropdownMenu>
               </div>
               <div>
-                <Label htmlFor="priority_id">Priority</Label>
+                <Label htmlFor="priority">Priority</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button className="w-full" variant="outline">
@@ -185,7 +213,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div>
+              {/* <div>
                 <Label htmlFor="assign_to">Assign To</Label>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -195,10 +223,34 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Assign To</DropdownMenuLabel>
-                    {users?.map((user) => (
+                    {users.map((user) => (
                       <DropdownMenuItem
-                        key={user.name}
-                        onClick={() => setassign_to(user.id)}
+                        key={user.id}
+                        onClick={() => setAssignTo(user.id)}
+                      >
+                        {user.id}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div> */}
+              <div>
+                <Label htmlFor="assign_to">Assign To</Label>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="w-full" variant="outline">
+                      {assignToName || "Select User"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Assign To</DropdownMenuLabel>
+                    {users.map((user) => (
+                      <DropdownMenuItem
+                        key={user.id}
+                        onClick={() => {
+                          setAssignTo(user.id); // Set the ID
+                          setAssignToName(user.name); // Set the name for display
+                        }}
                       >
                         {user.name}
                       </DropdownMenuItem>
@@ -216,9 +268,8 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Project</DropdownMenuLabel>
-                    {projects?.map((project) => (
+                    {projects.map((project) => (
                       <DropdownMenuItem
-                        className="w-full"
                         key={project.id}
                         onClick={() => {
                           setProject_id(project.id);
@@ -230,6 +281,30 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="start_date">Start Date</Label>
+                  <DatePicker
+                    selected={start_date} // Use start_date here
+                    onChange={(date) => setStartDate(date)}
+                    className="w-full border rounded bg-transparent p-2"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select Start Date"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end_date">End Date</Label>
+                  <DatePicker
+                    selected={end_date} // Use end_date here
+                    onChange={(date) => setEndDate(date)}
+                    className="w-full border rounded bg-transparent p-2"
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select End Date"
+                    minDate={start_date} // Ensure this uses start_date
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>

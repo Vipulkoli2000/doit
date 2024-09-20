@@ -21,6 +21,7 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
 import DatePicker from "react-datepicker";
+import Logout from "./Logouttask";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -173,7 +174,35 @@ export const columns: ColumnDef<User>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("status");
-      return <div className="capitalize">{status}</div>;
+
+      const handleStatusChange = async (newStatus: string) => {
+        const taskId = row.original.id;
+        const getItem = localStorage.getItem("user");
+        const user = JSON.parse(getItem);
+
+        try {
+          await axios.put(
+            `/api/tasks/${taskId}`,
+            { status: newStatus },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${user.token}`,
+              },
+            }
+          );
+          toast.success("Task status updated successfully");
+          // Update local state or refetch data here if needed
+          setData((prevData) =>
+            prevData.map((task) =>
+              task.id === taskId ? { ...task, status: newStatus } : task
+            )
+          );
+        } catch (error) {
+          console.error("Error updating task status:", error);
+          toast.error("Failed to update task status");
+        }
+      };
     },
   },
   {
@@ -394,6 +423,7 @@ export function DataTableDemo() {
           project_id,
           start_date: startDate?.toISOString(), // Send start date in ISO format
           end_date: endDate?.toISOString(), // Send end date in ISO format
+          status: "In Progress",
         },
         {
           headers: {
@@ -476,14 +506,13 @@ export function DataTableDemo() {
         <div className="w-full">
           <div className="flex items-center justify-between space-y-2">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
-                Task Manager
-              </h2>
+              <h2 className="text-xl font-bold tracking-tight">Task Manager</h2>
               <p className="text-muted-foreground">Manage your tasks here.</p>
             </div>
+            <Logout />
           </div>
           <div className="grid grid-cols-3 items-center py-2 gap-4]">
-            <div className="flex items-center">
+            <div className="flex items-center px-2">
               <Input
                 placeholder="Filter Tasks..."
                 value={

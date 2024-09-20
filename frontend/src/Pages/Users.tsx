@@ -18,8 +18,9 @@ import { UserNav } from "./Users/UserNav";
 import AddUser from "./Users/AddUser";
 import Reset from "./Users/ResetUser";
 import DeleteUser from "./Users/DeleteUsers";
-import { Eye, EyeOff } from "lucide-react"; // Import eye icons
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logout from "./TaskManager/Logouttask";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -274,7 +275,8 @@ export function DataTableDemo() {
               </p>
             </div>
             <div>
-              <UserNav />
+              {/* <UserNav /> */}
+              <Logout />
             </div>
           </div>
 

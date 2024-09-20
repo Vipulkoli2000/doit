@@ -18,6 +18,7 @@ import { UserNav } from "./Users/UserNav";
 import AddProject from "./Projects/AddProject";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import Logout from "./TaskManager/Logouttask";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -219,7 +220,8 @@ export function DataTableDemo() {
               </p>
             </div>
             <div>
-              <UserNav />
+              {/* <UserNav /> */}
+              <Logout />
             </div>
           </div>
 
