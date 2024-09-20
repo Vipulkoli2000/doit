@@ -34,13 +34,11 @@ class CreateMemberUserSeeder extends Seeder
             "tasks.index",
             "tasks.store",
             "tasks.update",
-            "tasks.destroy",
             "tasks.show",
             "taskSubmissions.index",
             "taskSubmissions.store",
             "taskSubmissions.show",
             "taskSubmissions.update",
-            "taskSubmissions.destroy",
             "show.files",
             "user.logout",
         ];
