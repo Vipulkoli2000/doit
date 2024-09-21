@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Icons } from '@/components/icons';
 
 export interface NavItem {

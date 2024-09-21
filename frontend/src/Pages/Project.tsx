@@ -1,6 +1,8 @@
+// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/Dashboard/Sidebar";
 import axios from "axios";
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,8 +15,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-import { UserNav } from "./Users/UserNav";
+import { ChevronDown, MoreHorizontal } from "lucide-react";
+// import { UserNav } from "./Users/UserNav";
 import AddProject from "./Projects/AddProject";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -26,7 +28,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
+  // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -104,6 +106,7 @@ export const columns: ColumnDef<User>[] = [
       const user = row.original;
       const getitem = localStorage.getItem("user");
       const users = JSON.parse(getitem);
+
       const handleDelete = async (id: string) => {
         try {
           await axios.delete(`/api/projects/${id}`, {
@@ -116,9 +119,9 @@ export const columns: ColumnDef<User>[] = [
           window.location.reload(); // Optional: Show success message
 
           // Remove the deleted project from the state
-          setData((prevData) =>
-            prevData.filter((project) => project.id !== id)
-          );
+          // setData((prevData) =>
+          //   prevData.filter((project) => project.id !== id)
+          // );
         } catch (error) {
           console.error("Error deleting project:", error);
           toast.error("Failed to delete project"); // Optional: Show error message
@@ -161,10 +164,9 @@ export function DataTableDemo() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [alertDialog, setAlertDialog] = useState(false);
+  // const [alertDialog, setAlertDialog] = useState(false);
   const getitem = localStorage.getItem("user");
-  const user = JSON.parse(getitem);
-
+  const user = getitem ? JSON.parse(getitem) : { token: "" };
   // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {

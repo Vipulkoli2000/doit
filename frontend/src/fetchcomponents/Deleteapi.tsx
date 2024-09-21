@@ -2,8 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import {
   useMutation,
   UseMutationResult,
-  MutationFunction,
-} from "@tanstack/react-query";
+ } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 // Define types for request and response data
@@ -21,7 +20,6 @@ interface ParamsType {
 // Define the POST function
 const postData = async ({
   endpoint,
-  data,
   headers,
 }: {
   endpoint: string;

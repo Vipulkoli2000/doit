@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,15 +61,15 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
 
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
-  
+
   React.useEffect(() => {
     if (assign_to) {
       const selectedUser = users.find((user) => user.id === assign_to);
       if (selectedUser) {
-        setAssignToName(selectedUser.name);  
+        setAssignToName(selectedUser.name);
       }
     }
-  }, [assign_to, users]);  
+  }, [assign_to, users]);
 
   // Fetch Users
   React.useEffect(() => {

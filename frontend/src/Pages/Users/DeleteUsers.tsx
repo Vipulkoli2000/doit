@@ -1,12 +1,7 @@
-  import React from "react";
-  import { Button } from "@/components/ui/button";
+// import React from 'react'
 
-  const DeleteUsers = () => {
-    return (
-      <div>
-        <Button variant="ghost">Delete Users</Button>
-      </div>
-    );
-  };
+const DeleteUsers = () => {
+  return <div></div>;
+};
 
-  export default DeleteUsers;
+export default DeleteUsers;

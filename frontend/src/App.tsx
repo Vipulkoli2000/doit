@@ -1,6 +1,6 @@
 // import { useState } from "react";
 // import { Button } from "@/components/ui/button";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Login from "@/Packages/Login/Login";
 import Dashboard from "./Pages/Dashboard";
 import Users from "./Pages/Users";

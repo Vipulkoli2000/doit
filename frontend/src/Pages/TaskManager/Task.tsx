@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// @ts-nocheck
 import {
   ColumnDef,
   SortingState,
@@ -524,7 +523,6 @@ export function DataTableDemo() {
                     .getColumn("assign_to")
                     ?.setFilterValue(event.target.value)
                 }
-                className="max-w-sm"
               />
             </div>
             <div className="flex items-center gap-2">

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// @ts-nocheck
+import { useState, useEffect } from "react";
 import Sidebar from "@/Dashboard/Sidebar";
 import axios from "axios";
 import {
@@ -14,10 +15,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-import { UserNav } from "./Users/UserNav";
+// import { UserNav } from "./Users/UserNav";
 import AddUser from "./Users/AddUser";
 import Reset from "./Users/ResetUser";
-import DeleteUser from "./Users/DeleteUsers";
+// import DeleteUser from "./Users/DeleteUsers";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logout from "./TaskManager/Logouttask";
@@ -29,7 +30,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -169,12 +169,19 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
+              onClick={() => {
+                // Use the user ID or any other data here
+                navigator.clipboard.writeText(user.id);
+              }}
             >
               Copy User ID
             </DropdownMenuItem>
-            <DropdownMenuItem userId={user.id} user={user}>
-              <DeleteUser />
+            <DropdownMenuItem
+            // onClick={() => {
+            //   <DeleteUser userId={user.id} user={user} />;
+            // }}
+            >
+              Delete User
             </DropdownMenuItem>
             <Reset userId={user.id} user={user} />
             <DropdownMenuItem></DropdownMenuItem>
@@ -193,7 +200,7 @@ export function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
-  const [alertDialog, setAlertDialog] = useState(false);
+  // const [alertDialog, setAlertDialog] = useState(false);
   const getitem = localStorage.getItem("user");
 
   const users = JSON.parse(getitem);

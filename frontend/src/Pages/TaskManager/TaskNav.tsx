@@ -32,7 +32,7 @@ const AddUser = () => {
         },
         { headers: { "Content-Type": "application/json" } }
       )
-      .then((response) => {
+      .then(() => {
         toast.success("User created successfully.");
         setOpen(false);
         window.location.reload();

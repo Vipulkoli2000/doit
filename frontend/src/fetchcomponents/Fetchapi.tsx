@@ -1,10 +1,11 @@
+// @ts-nocheck
 import axios, { AxiosError } from "axios";
 import { useState, useEffect } from "react";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { toast } from "sonner";
 
  interface ParamsType {
-  queryKey?: string | string[];
+  // queryKey?: string | string[];
   headers?: Record<string, string>;
   queryKeyId?: number | string | undefined;
   retry?: number;

@@ -2,8 +2,6 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import {
   useMutation,
   UseMutationResult,
-  MutationFunction,
-  QueryClient,
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";

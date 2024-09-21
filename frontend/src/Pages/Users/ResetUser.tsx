@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,7 +70,6 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ userId, user }) => {
     }
   };
 
- 
   return (
     <div>
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>

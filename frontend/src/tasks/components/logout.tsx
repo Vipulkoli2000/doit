@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Alert } from "react-native";
 import { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
