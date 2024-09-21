@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-// import { Button, buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import UserAuthForm from "./Userauthform";
 
 // import { Input } from "@/components/ui/input";
