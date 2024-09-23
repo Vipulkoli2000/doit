@@ -84,7 +84,7 @@ export const columns: ColumnDef<User>[] = [
     header: "Description/Tasks",
     cell: ({ row }) => (
       <div
-        className="truncate max-w-xs capitalize"
+        className="truncate max-w-xs sm:max-w-full capitalize"
         title={row.getValue("description")}
       >
         {row.getValue("description")}
@@ -94,15 +94,17 @@ export const columns: ColumnDef<User>[] = [
 
   {
     accessorKey: "priority",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Priority
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Priority
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("priority")}</div>
     ),
@@ -139,66 +141,66 @@ export const columns: ColumnDef<User>[] = [
       return <div className="capitalize">{assign_to}</div>;
     },
   },
-  {
-    accessorKey: "project",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Project
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const project = row.getValue("project");
-      return <div className="capitalize">{project}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Status
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const status = row.getValue("status");
+  // {
+  //   accessorKey: "project",
+  //   header: ({ column }) => (
+  //     <Button
+  //       variant="ghost"
+  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //     >
+  //       Project
+  //       <ArrowUpDown className="ml-2 h-4 w-4" />
+  //     </Button>
+  //   ),
+  //   cell: ({ row }) => {
+  //     const project = row.getValue("project");
+  //     return <div className="capitalize">{project}</div>;
+  //   },
+  // },
+  // {
+  //   accessorKey: "status",
+  //   header: ({ column }) => (
+  //     <Button
+  //       variant="ghost"
+  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //     >
+  //       Status
+  //       <ArrowUpDown className="ml-2 h-4 w-4" />
+  //     </Button>
+  //   ),
+  //   cell: ({ row }) => {
+  //     const status = row.getValue("status");
 
-      const handleStatusChange = async (newStatus: string) => {
-        const taskId = row.original.id;
-        const getItem = localStorage.getItem("user");
-        const user = JSON.parse(getItem);
+  //     const handleStatusChange = async (newStatus: string) => {
+  //       const taskId = row.original.id;
+  //       const getItem = localStorage.getItem("user");
+  //       const user = JSON.parse(getItem);
 
-        try {
-          await axios.put(
-            `/api/tasks/${taskId}`,
-            { status: newStatus },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${user.token}`,
-              },
-            }
-          );
-          toast.success("Task status updated successfully");
-          // Update local state or refetch data here if needed
-          setData((prevData) =>
-            prevData.map((task) =>
-              task.id === taskId ? { ...task, status: newStatus } : task
-            )
-          );
-        } catch (error) {
-          console.error("Error updating task status:", error);
-          toast.error("Failed to update task status");
-        }
-      };
-    },
-  },
+  //       try {
+  //         await axios.put(
+  //           `/api/tasks/${taskId}`,
+  //           { status: newStatus },
+  //           {
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //               Authorization: `Bearer ${user.token}`,
+  //             },
+  //           }
+  //         );
+  //         toast.success("Task status updated successfully");
+  //         // Update local state or refetch data here if needed
+  //         setData((prevData) =>
+  //           prevData.map((task) =>
+  //             task.id === taskId ? { ...task, status: newStatus } : task
+  //           )
+  //         );
+  //       } catch (error) {
+  //         console.error("Error updating task status:", error);
+  //         toast.error("Failed to update task status");
+  //       }
+  //     };
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => {

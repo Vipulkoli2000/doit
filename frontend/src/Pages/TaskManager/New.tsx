@@ -16,6 +16,13 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logout from "./Logouttask";
+import FilterPriority from "./FilterPriority";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast, Toaster } from "sonner";
+import AddTask from "./AddTask";
+import UpdateTask from "./Updatetask";
+import { DataTablePagination } from "../../tasks/components/data-table-pagination";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -37,79 +44,43 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
-];
-
 export type Payment = {
   id: string;
   description: string;
   priority: string;
   weight: number;
   assign_to: string;
-  project: string;
-  status: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "description",
     header: "Description/Tasks",
     cell: ({ row }) => (
       <div
-        className="truncate max-w-xs capitalize"
+        className="truncate max-w-xs sm:max-w-full capitalize"
         title={row.getValue("description")}
       >
         {row.getValue("description")}
@@ -119,15 +90,17 @@ export const columns: ColumnDef<Payment>[] = [
 
   {
     accessorKey: "priority",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Priority
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Priority
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("priority")}</div>
     ),
@@ -147,7 +120,6 @@ export const columns: ColumnDef<Payment>[] = [
       <div className="lowercase">{row.getValue("weight")}hrs</div>
     ),
   },
-
   {
     accessorKey: "assign_to",
     header: ({ column }) => (
@@ -162,66 +134,6 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const assign_to = row.getValue("assign_to");
       return <div className="capitalize">{assign_to}</div>;
-    },
-  },
-  {
-    accessorKey: "project",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Project
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const project = row.getValue("project");
-      return <div className="capitalize">{project}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Status
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-
-      const handleStatusChange = async (newStatus: string) => {
-        const taskId = row.original.id;
-        const getItem = localStorage.getItem("user");
-        const user = JSON.parse(getItem);
-
-        try {
-          await axios.put(
-            `/api/tasks/${taskId}`,
-            { status: newStatus },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${user.token}`,
-              },
-            }
-          );
-          toast.success("Task status updated successfully");
-          // Update local state or refetch data here if needed
-          setData((prevData) =>
-            prevData.map((task) =>
-              task.id === taskId ? { ...task, status: newStatus } : task
-            )
-          );
-        } catch (error) {
-          console.error("Error updating task status:", error);
-          toast.error("Failed to update task status");
-        }
-      };
     },
   },
   {
@@ -254,23 +166,6 @@ export const columns: ColumnDef<Payment>[] = [
           }
         }
       };
-      // const handleUpdate = async (id: string) => {
-      //   // if (window.confirm("Are you sure you want to update this task?")) {
-      //   //   setOpen(true);
-      //   // }
-      //   try {
-      //     const response = await axios.get(`/api/tasks/${id}`, {
-      //       headers: {
-      //         Authorization: `Bearer ${users.token}`,
-      //       },
-      //     });
-      //     setTask(response.data.data.Task);
-      //     setOpen(true);
-      //   } catch (error) {
-      //     console.error("Error fetching task:", error);
-      //   }
-      // };
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -281,20 +176,14 @@ export const columns: ColumnDef<Payment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {/* <DropdownMenuItem
-              className="justify-center"
-              onClick={() => navigator.clipboard.writeText(user.id)}
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.id)}
             >
               Copy Task ID
-            </DropdownMenuItem> */}
-            <DropdownMenuItem>
-              <Button
-                variant="ghost"
-                className="text-sm px-2 py-1"
-                onClick={() => handleDelete(user.id)}
-              >
-                Delete Task
-              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
+              Delete Task
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateTask taskId={user.id} initialTaskData={user} />
@@ -308,12 +197,47 @@ export const columns: ColumnDef<Payment>[] = [
 
 export function DataTableDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [data, setData] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const getitem = localStorage.getItem("user");
+  const [priorityFilter, setPriorityFilter] = React.useState("");
+  const user = JSON.parse(getitem);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  React.useEffect(() => {
+    if (priorityFilter) {
+      table.getColumn("priority")?.setFilterValue(priorityFilter);
+    }
+  }, [priorityFilter]);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          "/api/tasks",
+
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        setData(response.data.data.Task);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const table = useReactTable({
     data,
@@ -334,55 +258,127 @@ export function DataTableDemo() {
     },
   });
 
+  const handlePaste = async (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const pastedText = event.clipboardData.getData("text");
+    const sentences = pastedText
+      .split("\n")
+      .map((sentence) => sentence.trim())
+      .filter((sentence) => sentence.length > 0);
+
+    for (const sentence of sentences) {
+      try {
+        await axios.post(
+          "/api/tasks",
+          { description: sentence },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        toast.success(`Task added: ${sentence}`);
+        window.location.reload();
+      } catch (error) {
+        toast.error(`Failed to add task: ${sentence}`);
+        console.error("Error adding task:", error);
+      }
+    }
+    await fetchTasks();
+  };
+  const [description, setDescription] = React.useState("");
+  const [descriptionError, setDescriptionError] = React.useState("");
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default behavior
+      register(); // Trigger form submission
+    }
+  };
+  const register = () => {
+    if (!description.trim()) {
+      toast.error("Task description is required.");
+      return;
+    }
+    axios
+      .post(
+        "/api/tasks",
+        {
+          description,
+
+          status: "In Progress",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      )
+
+      .then(() => {
+        localStorage.setItem("toastMessage", "Task created successfully.");
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      })
+      .catch((error) => {
+        localStorage.setItem("toastMessage", "Failed to create task.");
+        console.error(error);
+      });
+  };
   return (
-    <div className="w-full">
-      <div className="grid ">
-        <div>
+    <div className="w-full py-4">
+      <div className="flex items-center justify-between">
+        <div className="">
           <h1> Task Manager</h1>
           <p>Manage your tasks here.</p>
         </div>
-        <div>
+        <div className="ml-auto">
           <Logout />
         </div>
       </div>
-
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter Task..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter Tasks..."
+          value={
+            (table.getColumn("description")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("description")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <div className="">
+            <FilterPriority setPriorityFilter={setPriorityFilter} />
+          </div>
+        </div>
+        <div className="ml-auto">
+          <AddTask />
+        </div>
       </div>
-      <div className="rounded-md border">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 ">
+        <Input
+          placeholder="Type here  ..."
+          autoFocus
+          onPaste={handlePaste}
+          className="mb-2 w-full sm:w-3/4 md:w-2/3 lg:w-3/4 border-0 text-sm"
+          style={{}}
+          id="description"
+          value={description}
+          onChange={(event) => {
+            setDescription(event.target.value);
+            if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
+          }}
+          onKeyDown={handleKeyDown}
+        />
+        {descriptionError && (
+          <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
+        )}
+      </div>
+      <div className="rounded -md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -433,28 +429,7 @@ export function DataTableDemo() {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        <DataTablePagination table={table} />
       </div>
     </div>
   );

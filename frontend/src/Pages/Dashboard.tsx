@@ -14,8 +14,8 @@ const Dashboard = () => {
       <main className="flex-1 bg-black px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
         {/* <Pagess /> */}
 
-        <Task />
-        {/* <New /> */}
+        {/* <Task /> */}
+        <New />
       </main>
     </div>
   );
