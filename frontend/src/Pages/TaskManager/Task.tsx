@@ -68,20 +68,13 @@ export const columns: ColumnDef<User>[] = [
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => {
-      const isChecked = row.getIsSelected();
-
-      return (
-        <Checkbox
-          checked={isChecked}
-          onCheckedChange={(value) => {
-            handleStatusChange(!!value);
-            row.toggleSelected(!!value);
-          }}
-          aria-label="Select row"
-        />
-      );
-    },
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
     enableSorting: false,
     enableHiding: false,
   },
@@ -507,9 +500,14 @@ export function DataTableDemo() {
         <div className="w-full">
           <div className="flex items-center justify-between space-y-2">
             <div>
-              <h2 className="text-xl font-bold tracking-tight">Task Manager</h2>
-              <p className="text-muted-foreground">Manage your tasks here.</p>
+              <h2 className="text-2xl md:text-xl font-bold tracking-tight">
+                Task Manager
+              </h2>
+              <p className="text-muted-foreground text-sm md:text-base">
+                Manage your tasks here.
+              </p>
             </div>
+
             <Logout />
           </div>
           <div className="grid grid-cols-3 items-center py-2 gap-4]">
@@ -531,9 +529,9 @@ export function DataTableDemo() {
               <div className="">
                 <FilterPriority setPriorityFilter={setPriorityFilter} />
               </div>
-              <div className="">
+              {/* <div className="">
                 <FilterStatus setStatusFilter={setStatusFilter} />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex justify-end">
@@ -558,104 +556,12 @@ export function DataTableDemo() {
             {descriptionError && (
               <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
             )}
-            <div className="grid grid-cols-5 gap-0 justify-items-center">
-              <div>
-                {/* <Label htmlFor="weight">Weight (hrs)</Label> */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="border-dashed " variant="ghost">
-                      {weight || "Weight(hrs)"}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>Weight</DropdownMenuLabel>
-                    {weights.map((item) => (
-                      <DropdownMenuItem
-                        key={item}
-                        onClick={() => setWeight(item)}
-                      >
-                        {item}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <div>
-                {/* <Label htmlFor="assign_to">Assign To</Label> */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="border-dashed " variant="ghost">
-                      {assignToName || "Users"}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>Assign To</DropdownMenuLabel>
-                    {users?.map((user) => (
-                      <DropdownMenuItem
-                        className="w-full"
-                        key={user.id}
-                        onClick={() => {
-                          setAssign_to(user.id);
-                          setAssignToName(user.name);
-                        }}
-                      >
-                        {user.name}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <div>
-                {/* <Label htmlFor="project_id">Project</Label> */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="" variant="ghost">
-                      {projectName || "Project"}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>Project</DropdownMenuLabel>
-                    {projects?.map((project) => (
-                      <DropdownMenuItem
-                        className="w-full"
-                        key={project.id}
-                        onClick={() => {
-                          setProject_id(project.id);
-                          setProjectName(project.name);
-                        }}
-                      >
-                        {project.name}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div>
-                {/* <Label htmlFor="start_date">Start Date</Label> */}
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  className="w-full  rounded bg-transparent p-2"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="Start Date"
-                />
-              </div>
-              <div>
-                {/* <Label htmlFor="end_date">End Date</Label> */}
-                <DatePicker
-                  selected={endDate}
-                  onChange={(date) => setEndDate(date)}
-                  className="  w-full rounded bg-transparent p-2"
-                  dateFormat="dd/MM/yyyy"
-                  placeholderText="End Date"
-                  minDate={startDate}
-                />
-              </div>
-            </div>
           </div>
 
-          <div className="rounded-md border">
+          <div
+            className="rounded-md border"
+            // style={{ overflowX: "auto", width: "100%" }}
+          >
             {loading ? (
               <p>Loading...</p>
             ) : (

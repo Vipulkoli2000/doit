@@ -99,41 +99,41 @@ export const columns: ColumnDef<User>[] = [
       <div className="capitalize">{row.getValue("email")}</div>
     ),
   },
-  {
-    accessorKey: "password",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Password
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const [showPassword, setShowPassword] = useState(false); // Local state to track password visibility
+  // {
+  //   accessorKey: "password",
+  //   header: ({ column }) => (
+  //     <Button
+  //       variant="ghost"
+  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //     >
+  //       Password
+  //       <ArrowUpDown className="ml-2 h-4 w-4" />
+  //     </Button>
+  //   ),
+  //   cell: ({ row }) => {
+  //     const [showPassword, setShowPassword] = useState(false); // Local state to track password visibility
 
-      return (
-        <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-2"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {/* Toggle between Eye and EyeOff icon */}
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </Button>
-          {/* Conditionally show/hide password */}
-          <span>{showPassword ? row.getValue("password") : "••••••••"}</span>
-        </div>
-      );
-    },
-  },
+  //     return (
+  //       <div className="flex items-center">
+  //         <Button
+  //           variant="ghost"
+  //           size="sm"
+  //           className="ml-2"
+  //           onClick={() => setShowPassword(!showPassword)}
+  //         >
+  //           {/* Toggle between Eye and EyeOff icon */}
+  //           {showPassword ? (
+  //             <EyeOff className="h-4 w-4" />
+  //           ) : (
+  //             <Eye className="h-4 w-4" />
+  //           )}
+  //         </Button>
+  //         {/* Conditionally show/hide password */}
+  //         <span>{showPassword ? row.getValue("password") : "••••••••"}</span>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: "actions",
     enableHiding: false,
