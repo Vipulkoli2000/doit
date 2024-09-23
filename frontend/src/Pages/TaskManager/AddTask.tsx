@@ -110,8 +110,8 @@ const AddTask = () => {
             priority,
             weight,
             assign_to,
-            start_date: startDate?.toISOString(),
-            end_date: endDate?.toISOString(),
+            start_date: startDate ? startDate.toISOString().slice(0, 10) : null,
+            end_date: endDate ? endDate.toISOString().slice(0, 10) : null,
             project_id,
             status: "In Progress",
           },
@@ -125,7 +125,7 @@ const AddTask = () => {
         .then(() => {
           toast.success("Task created successfully.");
           setOpen(false);
-          // window.location.reload(); 
+          // window.location.reload();
         })
         .catch((error) => {
           toast.error("Failed to create task.");

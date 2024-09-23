@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -51,6 +52,10 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
     initialTaskData.start_date || null // Use null as the initial value
   );
   const [end_date, setEndDate] = React.useState(initialTaskData.end_date || "");
+  const formattedStartDate = start_date
+    ? format(start_date, "yyyy/MM/dd")
+    : null;
+  const formattedEndDate = end_date ? format(end_date, "yyyy/MM/dd") : null;
 
   const [users, setUsers] = React.useState([]);
   const [projects, setProjects] = React.useState([]);
@@ -112,8 +117,8 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
           priority,
           weight,
           assign_to,
-          start_date,
-          end_date,
+          start_date: formattedStartDate, // Use formatted start date
+          end_date: formattedEndDate, // Use formatted end date
           project_id,
           status: "In Progress",
         },
