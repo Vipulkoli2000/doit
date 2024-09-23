@@ -1,38 +1,43 @@
 // @ts-nocheck
+"use client";
+
+import * as React from "react";
 import {
   ColumnDef,
-  SortingState,
   ColumnFiltersState,
+  SortingState,
   VisibilityState,
-  useReactTable,
+  flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import React, { useState, useEffect } from "react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Logout from "./Logouttask";
+import FilterPriority from "./FilterPriority";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { flexRender } from "@tanstack/react-table";
+import { toast, Toaster } from "sonner";
 import AddTask from "./AddTask";
 import UpdateTask from "./Updatetask";
-import FilterPriority from "./FilterPriority";
-import FilterStatus from "./FilterStatus";
-import { Label } from "@/components/ui/label";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast, Toaster } from "sonner";
-import DatePicker from "react-datepicker";
-import Logout from "./Logouttask";
-
+import { DataTablePagination } from "../../tasks/components/data-table-pagination";
+import { ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useSidebar } from "../../Dashboard/togglesidebar";
+import Sidebar from "@/Dashboard/Sidebar";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTablePagination } from "../../tasks/components/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -43,42 +48,39 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Define your User type
-export type User = {
+export type Payment = {
   id: string;
   description: string;
   priority: string;
   weight: number;
   assign_to: string;
-  project: string;
-  status: string;
+  start_date: string;
+  end_date: string;
 };
 
-// Define your columns
-export const columns: ColumnDef<User>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-
+export const columns: ColumnDef<Payment>[] = [
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "description",
     header: "Description/Tasks",
@@ -124,7 +126,6 @@ export const columns: ColumnDef<User>[] = [
       <div className="lowercase">{row.getValue("weight")}hrs</div>
     ),
   },
-
   {
     accessorKey: "assign_to",
     header: ({ column }) => (
@@ -141,66 +142,38 @@ export const columns: ColumnDef<User>[] = [
       return <div className="capitalize">{assign_to}</div>;
     },
   },
-  // {
-  //   accessorKey: "project",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Project
-  //       <ArrowUpDown className="ml-2 h-4 w-4" />
-  //     </Button>
-  //   ),
-  //   cell: ({ row }) => {
-  //     const project = row.getValue("project");
-  //     return <div className="capitalize">{project}</div>;
-  //   },
-  // },
-  // {
-  //   accessorKey: "status",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Status
-  //       <ArrowUpDown className="ml-2 h-4 w-4" />
-  //     </Button>
-  //   ),
-  //   cell: ({ row }) => {
-  //     const status = row.getValue("status");
-
-  //     const handleStatusChange = async (newStatus: string) => {
-  //       const taskId = row.original.id;
-  //       const getItem = localStorage.getItem("user");
-  //       const user = JSON.parse(getItem);
-
-  //       try {
-  //         await axios.put(
-  //           `/api/tasks/${taskId}`,
-  //           { status: newStatus },
-  //           {
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //               Authorization: `Bearer ${user.token}`,
-  //             },
-  //           }
-  //         );
-  //         toast.success("Task status updated successfully");
-  //         // Update local state or refetch data here if needed
-  //         setData((prevData) =>
-  //           prevData.map((task) =>
-  //             task.id === taskId ? { ...task, status: newStatus } : task
-  //           )
-  //         );
-  //       } catch (error) {
-  //         console.error("Error updating task status:", error);
-  //         toast.error("Failed to update task status");
-  //       }
-  //     };
-  //   },
-  // },
+  {
+    accessorKey: "start_date",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Start Date
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const start_date = row.getValue("start_date");
+      return <div className="capitalize">{start_date}</div>;
+    },
+  },
+  {
+    accessorKey: "end_date",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        End Date
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const end_date = row.getValue("end_date");
+      return <div className="capitalize">{end_date}</div>;
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -231,23 +204,6 @@ export const columns: ColumnDef<User>[] = [
           }
         }
       };
-      // const handleUpdate = async (id: string) => {
-      //   // if (window.confirm("Are you sure you want to update this task?")) {
-      //   //   setOpen(true);
-      //   // }
-      //   try {
-      //     const response = await axios.get(`/api/tasks/${id}`, {
-      //       headers: {
-      //         Authorization: `Bearer ${users.token}`,
-      //       },
-      //     });
-      //     setTask(response.data.data.Task);
-      //     setOpen(true);
-      //   } catch (error) {
-      //     console.error("Error fetching task:", error);
-      //   }
-      // };
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -258,20 +214,14 @@ export const columns: ColumnDef<User>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {/* <DropdownMenuItem
-              className="justify-center"
-              onClick={() => navigator.clipboard.writeText(user.id)}
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.id)}
             >
               Copy Task ID
-            </DropdownMenuItem> */}
-            <DropdownMenuItem>
-              <Button
-                variant="ghost"
-                className="text-sm px-2 py-1"
-                onClick={() => handleDelete(user.id)}
-              >
-                Delete Task
-              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
+              Delete Task
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateTask taskId={user.id} initialTaskData={user} />
@@ -283,33 +233,26 @@ export const columns: ColumnDef<User>[] = [
   },
 ];
 
-// Define the main component
 export function DataTableDemo() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const getitem = localStorage.getItem("user");
-  const user = JSON.parse(getitem);
-  const [task, setTask] = useState<Task>({});
-  //filter
   const [priorityFilter, setPriorityFilter] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState("");
+  const user = JSON.parse(getitem);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   React.useEffect(() => {
     if (priorityFilter) {
       table.getColumn("priority")?.setFilterValue(priorityFilter);
     }
   }, [priorityFilter]);
-  React.useEffect(() => {
-    if (statusFilter) {
-      table.getColumn("status")?.setFilterValue(statusFilter);
-    }
-  }, [statusFilter]);
 
-  // Fetch tasks from API
   useEffect(() => {
     const fetchTasks = async () => {
       setLoading(true);
@@ -333,8 +276,6 @@ export function DataTableDemo() {
 
     fetchTasks();
   }, []);
-
-  // Handle task deletion
 
   const table = useReactTable({
     data,
@@ -384,19 +325,8 @@ export function DataTableDemo() {
     }
     await fetchTasks();
   };
-  const weights = ["0.25", "0.50", "0.75", "1.00"];
-
   const [description, setDescription] = React.useState("");
   const [descriptionError, setDescriptionError] = React.useState("");
-  const [weight, setWeight] = React.useState("");
-  const [assignToName, setAssignToName] = React.useState("");
-  const [users, setUsers] = React.useState([]);
-  const [assign_to, setAssign_to] = React.useState("");
-  const [projectName, setProjectName] = React.useState("");
-  const [projects, setProjects] = React.useState([]);
-  const [project_id, setProject_id] = React.useState("");
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -414,11 +344,7 @@ export function DataTableDemo() {
         "/api/tasks",
         {
           description,
-          weight,
-          assign_to,
-          project_id,
-          start_date: startDate?.toISOString(), // Send start date in ISO format
-          end_date: endDate?.toISOString(), // Send end date in ISO format
+
           status: "In Progress",
         },
         {
@@ -440,187 +366,124 @@ export function DataTableDemo() {
         console.error(error);
       });
   };
-  useEffect(() => {
-    const message = localStorage.getItem("toastMessage");
-    if (message) {
-      toast(message);
-      localStorage.removeItem("toastMessage");
-    }
-  }, []);
-  React.useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const getItem = localStorage.getItem("user");
-        const user = JSON.parse(getItem);
-
-        if (user && user.token) {
-          const response = await axios.get("/api/users", {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          });
-          setUsers(response.data.data.Users);
-        } else {
-          console.error("User token not found.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch users", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-  React.useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const getItem = localStorage.getItem("user");
-        const user = JSON.parse(getItem);
-
-        if (user && user.token) {
-          const response = await axios.get("/api/projects", {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          });
-
-          setProjects(response.data.data.Projects);
-        } else {
-          console.error("User token not found.");
-        }
-      } catch (error) {
-        console.error("Failed to fetch projects", error);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
+  // const { isMinimized, toggle } = useSidebar();
+  // const handleToggle = () => {
+  //   toggle();
+  // };
   return (
-    <div className="flex bg-background">
-      <Toaster position="top-center" richColors></Toaster>
-      <main className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div className="w-full">
-          <div className="flex items-center justify-between space-y-2">
-            <div>
-              <h2 className="text-2xl md:text-xl font-bold tracking-tight">
-                Task Manager
-              </h2>
-              <p className="text-muted-foreground text-sm md:text-base">
-                Manage your tasks here.
-              </p>
-            </div>
+    <div className="w-full py-4 px-4">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Task Manager</h1>
+          <p className="text-muted-foreground">Manage your tasks here.</p>
+        </div>
+        <div>
+          {/* Logout component */}
+          <Logout />
 
-            <Logout />
-          </div>
-          <div className="grid grid-cols-3 items-center py-2 gap-4]">
-            <div className="flex items-center px-2">
-              <Input
-                placeholder="Filter Tasks..."
-                value={
-                  (table.getColumn("assign_to")?.getFilterValue() as string) ??
-                  ""
-                }
-                onChange={(event) =>
-                  table
-                    .getColumn("assign_to")
-                    ?.setFilterValue(event.target.value)
-                }
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="">
-                <FilterPriority setPriorityFilter={setPriorityFilter} />
-              </div>
-              {/* <div className="">
-                <FilterStatus setStatusFilter={setStatusFilter} />
-              </div> */}
-            </div>
+          {/* Button visible only under 768px (sm:hidden means hidden on sm and up, block means visible under sm) */}
+        </div>
+      </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4">
+        {/* Filter input */}
+        <Input
+          placeholder="Filter Tasks..."
+          value={
+            (table.getColumn("description")?.getFilterValue() as string) ?? ""
+          }
+          onChange={(event) =>
+            table.getColumn("description")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm w-full sm:w-auto"
+        />
 
-            <div className="flex justify-end">
-              <AddTask />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 ">
-            <Input
-              placeholder="Type here  ..."
-              autoFocus
-              onPaste={handlePaste}
-              className="mb-2 w-full sm:w-3/4 md:w-2/3 lg:w-3/4 border-0 text-sm"
-              style={{}}
-              id="description"
-              value={description}
-              onChange={(event) => {
-                setDescription(event.target.value);
-                if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
-              }}
-              onKeyDown={handleKeyDown}
-            />
-            {descriptionError && (
-              <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
-            )}
+        {/* Container for filters and buttons */}
+        <div className="flex flex-row gap-2 w-full sm:w-auto">
+          {/* Priority Filter */}
+          <div>
+            <FilterPriority setPriorityFilter={setPriorityFilter} />
           </div>
 
-          <div
-            className="rounded-md border"
-            // style={{ overflowX: "auto", width: "100%" }}
-          >
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No tasks found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            )}
+          {/* Add Task Button */}
+          <div>
+            <AddTask />
           </div>
         </div>
+      </div>
 
+      <div className="flex items-center justify-between">
+        <Input
+          placeholder="Type here  ..."
+          autoFocus
+          onPaste={handlePaste}
+          className="mb-2 w-full outline-none border-0 text-sm"
+          style={{}}
+          id="description"
+          value={description}
+          onChange={(event) => {
+            setDescription(event.target.value);
+            if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
+          }}
+          onKeyDown={handleKeyDown}
+        />
+        {descriptionError && (
+          <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
+        )}
+      </div>
+      <div className="rounded -md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
         <DataTablePagination table={table} />
-      </main>
+      </div>
     </div>
   );
 }
-
 export default DataTableDemo;

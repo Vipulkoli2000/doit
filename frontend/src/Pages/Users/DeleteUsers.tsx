@@ -1,7 +1,9 @@
 // import React from 'react'
 
-const DeleteUsers = () => {
-  return <div></div>;
+const   DeleteUsers = () => {
+  return <div> 
+    Delete 
+  </div>;
 };
 
 export default DeleteUsers;

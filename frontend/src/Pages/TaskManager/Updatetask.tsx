@@ -12,7 +12,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 
@@ -158,14 +158,14 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
             Update Task
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <ScrollArea>
-            <DialogHeader>
-              <DialogTitle>Update Task</DialogTitle>
-              <DialogDescription>
-                You can update tasks here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
+        <DialogContent className="sm:max-w-[390px] xl:max-h-[100vh]">
+          <DialogHeader>
+            <DialogTitle>Update Task</DialogTitle>
+            <DialogDescription>
+              You can update tasks here. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[400px] overflow-y-auto  ">
             <div className="grid gap-4 py-4">
               <div>
                 <Textarea
@@ -313,12 +313,13 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                 </div>
               </div>
             </div>
-            <DialogFooter>
-              <Button onClick={updateTask} type="button">
-                Save changes
-              </Button>
-            </DialogFooter>
           </ScrollArea>
+
+          <DialogFooter>
+            <Button onClick={updateTask} type="button">
+              Save changes
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -22,7 +22,7 @@ export default function Sidebar({ className }: SidebarProps) {
     <aside
       className={cn(
         `relative  hidden h-screen flex-none  bg-light transition-[width] duration-500 md:block `,
-        !isMinimized ? "w-72" : "w-[72px]",
+        !isMinimized ? "w-56" : "w-[60] sm:w-[80px]",
         className
       )}
     >
