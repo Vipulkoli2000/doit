@@ -189,7 +189,7 @@ const AddTask = () => {
             Add Task <BadgePlus className=" ml-2 " />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[500px] h-[200px] xl:max-h-[100vh]">
+        <DialogContent className="sm:max-w-[500px] h-[250px] xl:max-h-[100vh]">
           <div className="grid gap-4 py-4">
             <div>
               <Input
