@@ -226,7 +226,7 @@ export function DataTableDemo() {
 
       <div className="w-full py-4 px-4">
         <Sheet>
-          <SheetTrigger>
+          <SheetTrigger className="block sm:hidden">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
