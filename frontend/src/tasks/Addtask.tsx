@@ -83,10 +83,11 @@ const AddTask = () => {
           },
         }
       )
+
       .then(() => {
+        window.location.reload();
         toast.success("Task created successfully.");
         setOpen(false);
-        window.location.reload();
       })
       .catch((error) => {
         toast.error("Failed to create task.");

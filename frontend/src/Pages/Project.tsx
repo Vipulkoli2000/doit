@@ -21,6 +21,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import AddProject from "./Projects/AddProject";
 import Logout from "./TaskManager/Logouttask";
 import { Button } from "@/components/ui/button";
+import UpdateProject from "./UpdateProject";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -101,24 +102,25 @@ export const columns: ColumnDef<Payment>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-center">
+              Actions
+            </DropdownMenuLabel>
+            <div className="border-b " />
             <DropdownMenuItem
+              className="justify-center"
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
               Copy Project ID
             </DropdownMenuItem>
+            <UpdateProject taskId={user.id} initialTaskData={user} />
             <DropdownMenuItem
+              className="justify-center"
               onClick={() => {
                 handleDelete(user.id);
               }}
             >
               Delete
             </DropdownMenuItem>{" "}
-            <DropdownMenuItem>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                Update
-              </Button>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

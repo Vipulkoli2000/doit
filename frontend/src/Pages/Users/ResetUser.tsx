@@ -74,7 +74,7 @@ const UpdateUser: React.FC<UpdateUserProps> = ({ userId, user }) => {
     <div>
       <Dialog open={open} onOpenChange={(value) => setOpen(value)}>
         <DialogTrigger asChild>
-          <Button variant="ghost">Update User</Button>
+          <Button className="h-8 w-full" variant="ghost">Update User</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

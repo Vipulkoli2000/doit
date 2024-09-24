@@ -85,7 +85,27 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const user = row.original;
-      console.log(user);
+      const getitem = localStorage.getItem("user");
+      const users = JSON.parse(getitem);
+
+      const handleDelete = async (id: string) => {
+        if (window.confirm("Are you sure you want to delete this task?")) {
+          try {
+            await axios.delete(`/api/users/${id}`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${users.token}`,
+              },
+            });
+            window.location.reload();
+            setData((prevData) => prevData.filter((user) => user.id !== id));
+            toast.success("Task deleted successfully");
+          } catch (error) {
+            console.error("Error deleting task:", error);
+            toast.error("Failed to delete task");
+          }
+        }
+      };
 
       return (
         <DropdownMenu>
@@ -96,18 +116,23 @@ export const columns: ColumnDef<Payment>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-center">
+              Actions
+            </DropdownMenuLabel>
+            <div className="border-b " />
             <DropdownMenuItem
+              className="justify-center"
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >
               Copy User ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <DeleteUser />
-              </Button>
+            <DropdownMenuItem
+              className="justify-center"
+              onClick={() => handleDelete(user.id)}
+            >
+              Delete Task
             </DropdownMenuItem>
+
             <Reset userId={user.id} user={user} />
           </DropdownMenuContent>
         </DropdownMenu>

@@ -153,7 +153,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
         <DialogTrigger>
           <Button
             variant="outline"
-            className="border-transparent justify-center"
+            className="h-8 w-full border-transparent justify-center"
           >
             Update Task
           </Button>

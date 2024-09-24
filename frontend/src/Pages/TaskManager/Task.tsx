@@ -213,14 +213,20 @@ export const columns: ColumnDef<Payment>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-center">
+              Actions
+            </DropdownMenuLabel>
+            <div className="border-b " />
             <DropdownMenuItem
+              className="justify-center"
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >
               Copy Task ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDelete(user.id)}>
+            <DropdownMenuItem
+              className="justify-center"
+              onClick={() => handleDelete(user.id)}
+            >
               Delete Task
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
@@ -316,8 +322,9 @@ export function DataTableDemo() {
             },
           }
         );
-        window.location.reload();
+
         toast.success(`Task added: ${sentence}`);
+        window.location.reload();
       } catch (error) {
         toast.error(`Failed to add task: ${sentence}`);
         console.error("Error adding task:", error);
