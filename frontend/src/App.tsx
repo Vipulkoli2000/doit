@@ -5,7 +5,7 @@ import Login from "@/Packages/Login/Login";
 import Dashboard from "./Pages/Dashboard";
 import Users from "./Pages/Users";
 // import Project from "./Pages/Project";
-import Project from "./Pages/new";
+import Project from "./Pages/Project";
 
 function App() {
   return (

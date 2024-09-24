@@ -371,117 +371,120 @@ export function DataTableDemo() {
   //   toggle();
   // };
   return (
-    <div className="w-full py-4 px-4">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Task Manager</h1>
-          <p className="text-muted-foreground">Manage your tasks here.</p>
-        </div>
-        <div>
-          {/* Logout component */}
-          <Logout />
-
-          {/* Button visible only under 768px (sm:hidden means hidden on sm and up, block means visible under sm) */}
-        </div>
-      </div>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4">
-        {/* Filter input */}
-        <Input
-          placeholder="Filter Tasks..."
-          value={
-            (table.getColumn("description")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("description")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm w-full sm:w-auto"
-        />
-
-        {/* Container for filters and buttons */}
-        <div className="flex flex-row gap-2 w-full sm:w-auto">
-          {/* Priority Filter */}
+    <div className="flex bg-background">
+      <Sidebar />
+      <div className="w-full py-4 px-4">
+        <div className="flex items-center justify-between space-y-2">
           <div>
-            <FilterPriority setPriorityFilter={setPriorityFilter} />
+            <h1 className="text-2xl font-bold tracking-tight">Task Manager</h1>
+            <p className="text-muted-foreground">Manage your tasks here.</p>
           </div>
-
-          {/* Add Task Button */}
           <div>
-            <AddTask />
+            {/* Logout component */}
+            <Logout />
+
+            {/* Button visible only under 768px (sm:hidden means hidden on sm and up, block means visible under sm) */}
           </div>
         </div>
-      </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4">
+          {/* Filter input */}
+          <Input
+            placeholder="Filter Tasks..."
+            value={
+              (table.getColumn("description")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("description")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm w-full sm:w-auto"
+          />
 
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder="Type here  ..."
-          autoFocus
-          onPaste={handlePaste}
-          className="mb-2 w-full outline-none border-0 text-sm"
-          style={{}}
-          id="description"
-          value={description}
-          onChange={(event) => {
-            setDescription(event.target.value);
-            if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
-          }}
-          onKeyDown={handleKeyDown}
-        />
-        {descriptionError && (
-          <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
-        )}
-      </div>
-      <div className="rounded -md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+          {/* Container for filters and buttons */}
+          <div className="flex flex-row gap-2 w-full sm:w-auto">
+            {/* Priority Filter */}
+            <div>
+              <FilterPriority setPriorityFilter={setPriorityFilter} />
+            </div>
+
+            {/* Add Task Button */}
+            <div>
+              <AddTask />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Input
+            placeholder="Type here  ..."
+            autoFocus
+            onPaste={handlePaste}
+            className="mb-2 w-full outline-none border-0 text-sm"
+            style={{}}
+            id="description"
+            value={description}
+            onChange={(event) => {
+              setDescription(event.target.value);
+              if (descriptionError) setDescriptionError(""); // Clear error if user starts typing
+            }}
+            onKeyDown={handleKeyDown}
+          />
+          {descriptionError && (
+            <p className="text-red-500 text-sm mt-1">{descriptionError}</p>
+          )}
+        </div>
+        <div className="rounded -md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <DataTablePagination table={table} />
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <DataTablePagination table={table} />
+        </div>
       </div>
     </div>
   );
