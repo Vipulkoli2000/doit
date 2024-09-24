@@ -31,7 +31,7 @@ import Sidebar from "@/Dashboard/Sidebar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DashboardNav } from "../../Dashboard/Dashboard-nav";
 import { navItems } from "@/Config/data";
-
+import Dialog from "./useDialog";
 import {
   Sheet,
   SheetContent,
@@ -58,19 +58,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog } from "./useDialog";
 
+import { Label } from "@/components/ui/label";
 export type Payment = {
   id: string;
+  title: string;
   description: string;
-  priority: string;
+  priority: "Medium";
   weight: number;
   assign_to: string;
   start_date: string;
-  end_date: string;
+  project: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: "title",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Task name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("title")}</div>
+    ),
+  },
   {
     accessorKey: "description",
     header: ({ column }) => {
@@ -87,11 +105,13 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       return (
         <div
-          className="truncate max-w-xs sm:max-w-full capitalize hover:cursor-pointer"
+          className=" flex items-center space-x-2 capitalize hover:cursor-pointer"
           title={row.getValue("description")}
           onClick={() => openDialog(row.getValue("description"))}
         >
-          <div></div>
+          <div>
+            <Dialog />
+          </div>
           {row.getValue("description")}
         </div>
       );
@@ -146,36 +166,21 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="capitalize">{assign_to}</div>;
     },
   },
+
   {
-    accessorKey: "start_date",
+    accessorKey: "project",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Start Date
+        Project
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => {
-      const start_date = row.getValue("start_date");
-      return <div className="capitalize">{start_date}</div>;
-    },
-  },
-  {
-    accessorKey: "end_date",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        End Date
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const end_date = row.getValue("end_date");
-      return <div className="capitalize">{end_date}</div>;
+      const project = row.getValue("project");
+      return <div className="capitalize">{project}</div>;
     },
   },
   {
@@ -221,12 +226,7 @@ export const columns: ColumnDef<Payment>[] = [
               Actions
             </DropdownMenuLabel>
             <div className="border-b " />
-            <DropdownMenuItem
-              className="justify-center"
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy Task ID
-            </DropdownMenuItem>
+
             <DropdownMenuItem
               className="justify-center"
               onClick={() => handleDelete(user.id)}
@@ -355,7 +355,7 @@ export function DataTableDemo() {
         "/api/tasks",
         {
           description,
-
+          priority: "Medium",
           status: "In Progress",
         },
         {

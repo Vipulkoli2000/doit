@@ -67,21 +67,12 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    accessorKey: "name",
-    header: "Username",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
-  },
-  {
     accessorKey: "email",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className=""
       >
         Email
         <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -91,6 +82,12 @@ export const columns: ColumnDef<Payment>[] = [
       <div className="capitalize">{row.getValue("email")}</div>
     ),
   },
+  {
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
+  },
+
   {
     id: "actions",
     enableHiding: false,
@@ -275,9 +272,9 @@ export function DataTableDemo() {
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter Users..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
+              table.getColumn("email")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
