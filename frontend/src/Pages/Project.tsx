@@ -19,6 +19,7 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import AddProject from "./Projects/AddProject";
+import Logout from "./TaskManager/Logouttask";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -113,6 +114,11 @@ export const columns: ColumnDef<Payment>[] = [
             >
               Delete
             </DropdownMenuItem>{" "}
+            <DropdownMenuItem>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                Update
+              </Button>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -176,6 +182,18 @@ export function DataTableDemo() {
     <div className="flex bg-background">
       <Sidebar />
       <div className="w-full py-4 px-4">
+        <div className="flex items-center justify-between space-y-2">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Projects</h2>
+            <p className="text-muted-foreground">
+              You can add new Projects here.
+            </p>
+          </div>
+          <div>
+            {/* <UserNav /> */}
+            <Logout />
+          </div>
+        </div>
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter Projects..."
@@ -185,33 +203,9 @@ export function DataTableDemo() {
             }
             className="max-w-sm"
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AddProject />
+          <div className="ml-auto">
+            <AddProject />
+          </div>
         </div>
         <div className="rounded-md border">
           <Table>

@@ -316,8 +316,8 @@ export function DataTableDemo() {
             },
           }
         );
-        toast.success(`Task added: ${sentence}`);
         window.location.reload();
+        toast.success(`Task added: ${sentence}`);
       } catch (error) {
         toast.error(`Failed to add task: ${sentence}`);
         console.error("Error adding task:", error);
@@ -407,9 +407,9 @@ export function DataTableDemo() {
             </div>
 
             {/* Add Task Button */}
-            <div>
-              <AddTask />
-            </div>
+          </div>
+          <div className="ml-auto">
+            <AddTask />
           </div>
         </div>
 
