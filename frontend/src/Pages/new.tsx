@@ -39,6 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 export type User = {
   // id: string;
@@ -50,26 +51,14 @@ export type User = {
 export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "name",
-    header: "name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
+    header: "Name",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "description",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          description
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    header: "Description",
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue("description")}</div>
+      <div className="capitalize">{row.getValue("description")}</div>
     ),
   },
   {
@@ -88,8 +77,9 @@ export const columns: ColumnDef<Payment>[] = [
               Authorization: `Bearer ${users.token}`,
             },
           });
+          window.location.reload();
+
           toast.success("Project deleted successfully!");
-          window.location.reload(); // Optional: Show success message
 
           // Remove the deleted project from the state
           // setData((prevData) =>
