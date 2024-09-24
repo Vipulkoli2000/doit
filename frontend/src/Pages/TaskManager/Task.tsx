@@ -59,35 +59,17 @@ export type Payment = {
 };
 
 export const columns: ColumnDef<Payment>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
   {
     accessorKey: "description",
     header: "Description/Tasks",
     cell: ({ row }) => (
       <div
-        className="truncate max-w-xs sm:max-w-full capitalize"
+        className="truncate max-w-xs sm:max-w-full capitalize hover:cursor-pointer"
         title={row.getValue("description")}
+        onClick={() => {
+          setSelectedDescription(row.getValue("description"));
+          setOpenDialog(true);
+        }}
       >
         {row.getValue("description")}
       </div>
