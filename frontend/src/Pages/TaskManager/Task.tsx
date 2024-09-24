@@ -40,7 +40,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -59,6 +58,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Dialog } from "./useDialog";
 
 export type Payment = {
   id: string;
@@ -73,19 +73,29 @@ export type Payment = {
 export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "description",
-    header: "Description/Tasks",
-    cell: ({ row }) => (
-      <div
-        className="truncate max-w-xs sm:max-w-full capitalize hover:cursor-pointer"
-        title={row.getValue("description")}
-        onClick={() => {
-          setSelectedDescription(row.getValue("description"));
-          setOpenDialog(true);
-        }}
-      >
-        {row.getValue("description")}
-      </div>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Description/Tasks
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div
+          className="truncate max-w-xs sm:max-w-full capitalize hover:cursor-pointer"
+          title={row.getValue("description")}
+          onClick={() => openDialog(row.getValue("description"))}
+        >
+          <div></div>
+          {row.getValue("description")}
+        </div>
+      );
+    },
   },
 
   {
@@ -417,7 +427,6 @@ export function DataTableDemo() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4">
-          {/* Filter input */}
           <Input
             placeholder="Filter Tasks..."
             value={
@@ -428,18 +437,13 @@ export function DataTableDemo() {
             }
             className="max-w-sm w-full sm:w-auto"
           />
-
-          {/* Container for filters and buttons */}
           <div className="flex flex-row gap-2 w-full sm:w-auto">
-            {/* Priority Filter */}
             <div>
               <FilterPriority setPriorityFilter={setPriorityFilter} />
             </div>
-
-            {/* Add Task Button */}
-          </div>
-          <div className="ml-auto">
-            <AddTask />
+            <div className="ml-auto">
+              <AddTask />
+            </div>
           </div>
         </div>
 
