@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 const UpdateProject = ({ taskId, initialTaskData }) => {
+  console.log(initialTaskData);
   const [description, setDescription] = React.useState(
     initialTaskData.description || ""
   );
@@ -26,7 +27,7 @@ const UpdateProject = ({ taskId, initialTaskData }) => {
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
 
-  const Projects_id = initialTaskData.project_id;
+  const Projects_id = initialTaskData.id;
   console.log(initialTaskData.project_id);
 
   const updateProject = () => {

@@ -11,7 +11,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { CalendarDays } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +28,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BadgePlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { ChevronDown } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const priorities = ["Low", "Medium", "High"];
 const weights = [
@@ -185,12 +189,12 @@ const AddTask = () => {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">
+          <Button className="" variant="outline">
             Add Task <BadgePlus className=" ml-2 " />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[500px] h-[250px] xl:max-h-[100vh]">
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-2">
             <div>
               <Input
                 id="title"
@@ -224,12 +228,12 @@ const AddTask = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-5 gap-4">
+            <div className="flex space-x-4">
               <div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      className="px-2 py-1 text-[11px] h-8 w-15 flex items-center justify-between"
+                        className="px-2 py-1 text-[11px] h-8 w-13 flex items-center justify-between"
                       variant="outline"
                     >
                       <svg
@@ -238,7 +242,7 @@ const AddTask = () => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-4 "
+                        className="size-5 "
                       >
                         <path
                           strokeLinecap="round"
@@ -246,9 +250,9 @@ const AddTask = () => {
                           d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                         />
                       </svg>
-
-                      <span className="mt-1 ml-1">{weight || "Weight"}</span>
-
+                      <span className="flex-1 justify-center md:justify-center overflow-hidden text-ellipsis whitespace-nowrap">
+                        {weight || "Weight"}
+                      </span>
                       {/* Show reset icon when weight is selected */}
                       {weight && (
                         <svg
@@ -289,11 +293,12 @@ const AddTask = () => {
                 </DropdownMenu>
               </div>
 
+              {/* users */}
               <div className="justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      className="px-2 py-1 text-[11px] h-8 w-15 flex items-center justify-between"
+                      className="px-1 text-[12px] h-8 w-15 flex items-center justify-center text-center min-w-[120px] max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap"
                       variant="outline"
                     >
                       <svg
@@ -302,7 +307,7 @@ const AddTask = () => {
                         viewBox="0 0 24 24"
                         strokeWidth={1.5}
                         stroke="currentColor"
-                        className="size-4"
+                        className="size-5"
                       >
                         <path
                           strokeLinecap="round"
@@ -311,9 +316,10 @@ const AddTask = () => {
                         />
                       </svg>
 
-                      <span className="mt-1 ml-1">
-                        {assignToName || "User"}
+                      <span className="flex-1 justify-center md:justify-center overflow-hidden text-ellipsis whitespace-nowrap">
+                        {assignToName || "Users"}
                       </span>
+
                       {assignToName && (
                         <svg
                           onClick={(e) => {
@@ -326,7 +332,7 @@ const AddTask = () => {
                           viewBox="0 0 24 24"
                           strokeWidth={1.5}
                           stroke="currentColor"
-                          className="w-4 h-4 ml-1 cursor-pointer"
+                          className="w-5 h-5 ml-2 cursor-pointer"
                         >
                           <path
                             strokeLinecap="round"
@@ -354,46 +360,54 @@ const AddTask = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-
-              {/* <div className="flex items-center border rounded-[8px] w-23" >
-                Clock SVG Icon
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-4 h-4 mr-2" // Adjust size and margin
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-
+              {/* date */}
+              <div className="flex items-center border rounded-[8px] w-[]">
+                <CalendarDays className="size-5 ml-1" />
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}
-                  className="px-2 py-1 text-[11px] h-6 w-13 bg-transparent  focus:outline-none text-white"
+                  className="text-center px-2 py-1 text-[11px] h-6 w-[75px] bg-transparent focus:outline-none text-white"
                   dateFormat="dd/MM/yyyy"
                   placeholderText="Date"
                 />
-              </div> */}
+                {startDate && (
+                  <svg
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent DatePicker from opening
+                      setStartDate(null); // Reset the selected date
+                    }}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5 cursor-pointer text-white"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
+              </div>
             </div>
-
-            <div className="border-b " />
           </div>
+          <Separator />
 
-          <DialogFooter>
-            <div>
+          {/* <hr className="border-width: 0;" style={{border: "", borderTop: "  "}} /> */}
+
+          <DialogFooter className="flex flex-wrap  sm:flex-nowrap md:flex-nowrap">
+            <div className="flex  justify-between items-center space-x-4">
+              {/* Project Dropdown aligned to the left */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    className="px-2 py-1 text-[11px] h-6 w-10"
+                    className="px-2 py-1 text-[12px] h-8"
                     variant="outline"
                   >
                     {projectName || "Project"}
+                    <ChevronDown className="size-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -412,10 +426,21 @@ const AddTask = () => {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Buttons aligned to the right */}
+              <div className="flex space-x-4 ml-auto">
+                <Button
+                  className="h-8"
+                  type="button"
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button className="h-8" type="submit" onClick={register}>
+                  Save
+                </Button>
+              </div>
             </div>
-            <Button type="submit" onClick={register}>
-              Save
-            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

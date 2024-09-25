@@ -3,6 +3,12 @@
 
 import * as React from "react";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -22,6 +28,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, Toaster } from "sonner";
 import AddTask from "./AddTask";
+import Comments from "./Comments";
 import UpdateTask from "./Updatetask";
 import { DataTablePagination } from "../../tasks/components/data-table-pagination";
 import { ChevronLeft } from "lucide-react";
@@ -32,6 +39,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DashboardNav } from "../../Dashboard/Dashboard-nav";
 import { navItems } from "@/Config/data";
 import Dialog from "./useDialog";
+import { MessageSquareText } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -97,26 +105,31 @@ export const columns: ColumnDef<Payment>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Description/Tasks
+          Description
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
+      const description = row.getValue("description");
+      const truncatedDescription =
+        description.length > 30 ? `${description.slice(0, 30)}...` : description;
+  
       return (
         <div
-          className=" flex items-center space-x-2 capitalize hover:cursor-pointer"
-          title={row.getValue("description")}
-          onClick={() => openDialog(row.getValue("description"))}
+          className="flex items-center space-x-2 capitalize hover:cursor-pointer"
+          title={description} // Full description as a tooltip
+          onClick={() => openDialog(description)} // Pass the full description to the dialog
         >
           <div>
             <Dialog />
           </div>
-          {row.getValue("description")}
+          {truncatedDescription}
         </div>
       );
     },
   },
+  
 
   {
     accessorKey: "priority",
@@ -181,6 +194,23 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const project = row.getValue("project");
       return <div className="capitalize">{project}</div>;
+    },
+  },
+  {
+    id: "comments",
+    cell: ({ row }) => {
+      return (
+        <div
+          className=" flex items-center space-x-2 capitalize hover:cursor-pointer"
+          title={row.getValue("description")}
+          onClick={() => row.getValue("comments")}
+        >
+          <div>
+            <Comments />
+          </div>
+          {row.getValue("comments")}
+        </div>
+      );
     },
   },
   {

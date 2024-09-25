@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React from "react";
+import React, { useEffect } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,6 +64,16 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
   //   initialTaskData.end_date || null
   // );
 
+  useEffect(() => {
+    console.log(...initialTaskData.assign_to);
+    setDescription(initialTaskData.description);
+    setPriority(initialTaskData.priority);
+    setWeight(initialTaskData.weight);
+    setAssignTo(...initialTaskData.assign_to);
+    setAssignToName(initialTaskData.assignToName);
+    setProjectName(initialTaskData.projectName);
+  }, [initialTaskData]);
+
   const getitem = localStorage.getItem("user");
   const user = JSON.parse(getitem);
 
@@ -79,11 +89,11 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
   // Fetch Users
   React.useEffect(() => {
     axios
-      .get("/api/users", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      })
+        .get("/api/users", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        })
       .then((response) => {
         setUsers(response.data.data.Users);
       })

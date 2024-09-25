@@ -71,9 +71,9 @@ class ProjectsController extends BaseController
     public function update(UpdateProjectRequest $request, string $id): JsonResponse
     {
 
-        if($validator->fails()){
-          return $this->sendError("Validation Errors.", $validator->errors());
-        }
+        // if($validator->fails()){
+        //   return $this->sendError("Validation Errors.", $validator->errors());
+        // }
 
         $project = Project::find($id);
         $project->name = $request->input('name');
