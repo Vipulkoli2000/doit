@@ -22,7 +22,7 @@ Route::group(['middleware'=>['auth:sanctum', 'permission']], function(){
    Route::get('/permissions', [RolesPermissionsController::class, 'index'])->name('permissions.index');
    Route::resource('projects', ProjectsController::class);
    Route::resource('tasks', TasksController::class);
-   Route::resource('taskSubmissions', TaskSubmissionsController::class);
+   Route::resource('comments', TaskSubmissionsController::class);
    Route::get('/users', [UserController::class, 'index'])->name('users.index');
    Route::post('/users', [UserController::class, 'store'])->name('users.store');
    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
