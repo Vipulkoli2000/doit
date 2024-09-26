@@ -16,13 +16,13 @@ class CreateMemberUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::updateOrCreate(
-            ['email' => 'ganesh@gmail.com'], // Search for user by email
-            [
-                'name' => 'ganesh',
-                'password' => Hash::make('abcd123') // Hash the password
-            ]
-        );
+        // $user = User::updateOrCreate(
+        //     ['email' => 'ganesh@gmail.com'], // Search for user by email
+        //     [
+        //         'name' => 'ganesh',
+        //         'password' => Hash::make('abcd123') // Hash the password
+        //     ]
+        // );
     
          // Create or retrieve the admin role
         $role = Role::firstOrCreate(['name' => 'member']);     
@@ -46,6 +46,6 @@ class CreateMemberUserSeeder extends Seeder
 
         $role->syncPermissions($permissions);
      
-        $user->assignRole([$role->id]);
+        // $user->assignRole([$role->id]);
     }
 }

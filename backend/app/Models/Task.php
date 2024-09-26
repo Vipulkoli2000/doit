@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\TaskSubmission;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, softDeletes;
+
 
     protected $casts = [
         'project_id' => 'integer',
@@ -30,5 +33,25 @@ class Task extends Model
     public function taskSubmissions(){
         return $this->hasMany(TaskSubmission::class, "task_id");
     }
+
+    // public function setStartDateAttribute($value)
+    // {
+    //         $this->attributes['start_date'] = $value ? Carbon::createFromFormat('Y/m/d', $value)->format('Y-m-d') : null;
+    // }
+
+    // public function getStartDateAttribute($value)
+    // {
+    //         return $value ? Carbon::parse($value)->format('Y-m-d') : null;   
+    // }   
+    
+    // public function setEndDateAttribute($value)
+    // {
+    //         $this->attributes['end_date'] = $value ? Carbon::createFromFormat('Y/m/d', $value)->format('Y-m-d') : null;
+    // }
+
+    // public function getEndDateAttribute($value)
+    // {
+    //         return $value ? Carbon::parse($value)->format('Y-m-d') : null;   
+    // }   
 
 }

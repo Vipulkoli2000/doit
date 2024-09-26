@@ -116,9 +116,22 @@ class TasksController extends BaseController
             return $this->sendError("Task not found", ['error'=>'Task not found']);
         }
 
-        $task->delete();
+        $task->forceDelete();
 
         return $this->sendResponse([], "Task Deleted Successfully");
+    }
+
+
+    public function archive(string $id): JsonResponse
+    {
+        $task = Task::find($id);
+        if(!$task){
+            return $this->sendError("Task not found", ['error'=>'Task not found']);
+        }
+
+        $task->delete();
+
+        return $this->sendResponse([], "Task Archived Successfully");
     }
 
     public function showProjectsTasks(string $projectId){
