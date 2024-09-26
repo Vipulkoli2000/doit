@@ -42,7 +42,7 @@ export function TooltipDemo({ taskId }) {
       try {
         // Send the comment to the API with the task_id
         await axios.post(
-          "/api/taskSubmissions",
+          `/api/comments`,
           {
             comments,
             task_id: taskId, // Include task_id in the request body
@@ -67,7 +67,7 @@ export function TooltipDemo({ taskId }) {
   // Function to fetch comments from the API
   const fetchComments = async () => {
     try {
-      const response = await axios.get("/api/taskSubmissions", {
+      const response = await axios.get("/api/comments", {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },

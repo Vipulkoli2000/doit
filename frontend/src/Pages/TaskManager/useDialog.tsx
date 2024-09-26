@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -11,7 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import axios from "axios"; // Import axios
+import { ChevronDown, ChevronUp, X, Plus, Paperclip } from "lucide-react";
 
 export function DialogDemo() {
   const getitem = localStorage.getItem("user");
@@ -71,122 +72,78 @@ export function DialogDemo() {
           />
         </svg>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[]">
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
+          <DialogTitle>Inbox</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">
-              Description
-            </Label>
-            <Input
-              id="description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="col-span-3"
-            />
-          </div>
+          {/* Custom TaskDialog-like content here */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-700"></div>
+          <div className="flex-grow overflow-y-auto">
+            <div className="p-4 space-y-4">
+              <div className="flex items-center space-x-2">
+                <Input
+                  placeholder="Task Name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="text-xl font-semibold bg-gray-800 border-none shadow-none text-gray-100 placeholder-gray-500"
+                />
+              </div>
+              <Textarea
+                placeholder="Description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                className="w-full bg-gray-800 border-none resize-none text-gray-100 placeholder-gray-500"
+              />
 
-          <div>
-            <Label htmlFor="assign_to" className="text-right">
-              Assign To
-            </Label>
-            <Input
-              id="assign_to"
-              value={formData.assign_to}
-              onChange={(e) =>
-                setFormData({ ...formData, assign_to: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-2 items-center gap-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="priority" className="text-right">
-                Priority
-              </Label>
-              <Input
-                id="priority"
-                value={formData.priority}
-                onChange={(e) =>
-                  setFormData({ ...formData, priority: e.target.value })
-                }
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="weight" className="text-right">
-                Weight
-              </Label>
-              <Input
-                id="weight"
-                value={formData.weight}
-                onChange={(e) =>
-                  setFormData({ ...formData, weight: e.target.value })
-                }
-                className="col-span-3"
-              />
+              <div className="flex items-center space-x-2">
+                
+                <Input
+                  placeholder="Comment"
+                  className="flex-grow bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500"
+                  value={formData.comments}
+                  onChange={(e) =>
+                    setFormData({ ...formData, comments: e.target.value })
+                  }
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-400 hover:text-gray-100"
+                >
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 items-center gap-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">
-                Status
-              </Label>
-              <Input
-                id="status"
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-                className="col-span-3"
-              />
+          <div className="p-4 bg-gray-900 space-y-2 rounded-b-lg">
+            <div className="flex justify-between items-center">
+              <Label className="text-gray-400">Project</Label>
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-300">Inbox</span>
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="project" className="text-right">
-                Project
-              </Label>
-              <Input
-                id="project"
-                value={formData.project}
-                onChange={(e) =>
-                  setFormData({ ...formData, project: e.target.value })
-                }
-                className="col-span-3"
-              />
+            <div className="flex justify-between items-center">
+              <Label className="text-gray-400">Due date</Label>
+              <div className="flex items-center space-x-2">
+                <span className="text-red-400">16 Sep</span>
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              </div>
             </div>
-          </div>
-          <div>
-            <Label htmlFor="comments" className="text-right">
-              Comments
-            </Label>
-            <Input
-              id="comments"
-              value={formData.comments}
-              onChange={(e) =>
-                setFormData({ ...formData, comments: e.target.value })
-              }
-              className="col-span-3"
-            />
+            <div className="flex justify-between items-center">
+              <Label className="text-gray-400">Priority</Label>
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-300">P4</span>
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              </div>
+            </div>
           </div>
         </div>
-
         <DialogFooter>
           <Button type="submit">Save changes</Button>
         </DialogFooter>

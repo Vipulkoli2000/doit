@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import axios from "axios";
 
-const UpdateProject = ({ taskId, initialTaskData }) => {
+const UpdateProject = ({ initialTaskData }) => {
   console.log(initialTaskData);
   const [description, setDescription] = React.useState(
     initialTaskData.description || ""

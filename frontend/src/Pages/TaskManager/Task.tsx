@@ -81,6 +81,30 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+      className="rounded-full"
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="rounded-full"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "title",
     header: ({ column }) => {
       return (
@@ -111,25 +135,23 @@ export const columns: ColumnDef<Payment>[] = [
       );
     },
     cell: ({ row }) => {
-      const description = row.getValue("description");
+      const description = row.getValue("description") || ""; // Default to an empty string if null
       const truncatedDescription =
-        description.length > 30 ? `${description.slice(0, 30)}...` : description;
-  
+        description.length > 30
+          ? `${description.slice(0, 30)}...`
+          : description;
+
       return (
         <div
           className="flex items-center space-x-2 capitalize hover:cursor-pointer"
           title={description} // Full description as a tooltip
           onClick={() => openDialog(description)} // Pass the full description to the dialog
         >
-          <div>
-            <Dialog />
-          </div>
           {truncatedDescription}
         </div>
       );
     },
   },
-  
 
   {
     accessorKey: "priority",
@@ -243,6 +265,24 @@ export const columns: ColumnDef<Payment>[] = [
           }
         }
       };
+      const handleDone = async (id: string) => {
+        if (window.confirm("mark this done?")) {
+          try {
+            await axios.delete(`/api/tasks-archive/${id}`, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${users.token}`,
+              },
+            });
+            window.location.reload();
+            setData((prevData) => prevData.filter((task) => task.id !== id));
+            toast.success("Task   successfully");
+          } catch (error) {
+            console.error("Error   task:", error);
+            toast.error("Failed to   task");
+          }
+        }
+      };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -262,6 +302,12 @@ export const columns: ColumnDef<Payment>[] = [
               onClick={() => handleDelete(user.id)}
             >
               Delete Task
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="justify-center"
+              onClick={() => handleDone(user.id)}
+            >
+              Done
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateTask taskId={user.id} initialTaskData={user} />

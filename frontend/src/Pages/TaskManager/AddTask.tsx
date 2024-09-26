@@ -233,7 +233,7 @@ const AddTask = () => {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                        className="px-2 py-1 text-[11px] h-8 w-13 flex items-center justify-between"
+                      className="px-2 py-1 text-[11px] h-8 w-13 flex items-center justify-between"
                       variant="outline"
                     >
                       <svg
