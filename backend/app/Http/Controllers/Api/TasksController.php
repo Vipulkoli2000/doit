@@ -203,5 +203,16 @@ class TasksController extends BaseController
     }
 
 
+    public function getArchive(): JsonResponse
+    {
+        $authUser = auth()->user()->roles->pluck('name')->first();
+        if($authUser == 'admin'){
+            $tasks = Task::onlyTrashed()->get();
+               //i am sending realted users fron the resurce file
+        }
+           //should we give only one variable called data in every api?
+        return $this->sendResponse(['Task'=> TaskResource::collection($tasks)], "Projects retrived successfuly");
+    }
+
 
 }
