@@ -11,16 +11,39 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"; // ShadCN Dialog components
+import axios from "axios";
+import { toast } from "sonner";
 
-export default function CommentDialogComponent() {
+const HandleSave = ({ taskId, initialTaskData }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<string[]>([]);
+  const [task_id, setTask_id] = useState("");
+  const getitem = localStorage.getItem("user");
+  const user = JSON.parse(getitem);
 
   const handleSave = () => {
-    if (comment.trim()) {
-      setComments([comment, ...comments]);
-      setComment("");
-    }
+    axios
+      .post(
+        `/api/comments`,
+        {
+          comments: comment,
+          task_id: taskId,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`, // Use correct token from localStorage or user state
+          },
+        }
+      )
+      .then(() => {
+        toast.success("Comment created successfully!");
+        setComment(""); // Clear the input after success
+      })
+      .catch((error) => {
+        console.error("Error submitting comment:", error);
+        toast.error("Failed to submit comment.");
+      });
   };
 
   const handleDelete = (indexToDelete: number) => {
@@ -39,37 +62,9 @@ export default function CommentDialogComponent() {
             <DialogTitle>Add a new comment</DialogTitle>
           </DialogHeader>
 
-          {/* Scrollable area for saved comments */}
-          <div className="max-h-64 overflow-y-auto space-y-2 mb-4">
-            {comments.length > 0 ? (
-              comments.map((comment, index) => (
-                <Card key={index} className="relative mb-2">
-                  <CardHeader>
-                    <h3 className="font-semibold text-lg">
-                      Comment {index + 1}
-                    </h3>
-                  </CardHeader>
+           <div className="max-h-64 overflow-y-auto space-y-2 mb-4"></div>
 
-                  {/* Cross icon to delete comment */}
-                  <Button
-                    variant="ghost"
-                    className="absolute top-2 right-2 p-0"
-                    onClick={() => handleDelete(index)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-
-                  <CardContent>
-                    <p>{comment}</p>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <p className="text-gray-500">No comments yet.</p>
-            )}
-          </div>
-
-          {/* Input for adding new comments */}
+ 
           <Input
             type="text"
             value={comment}
@@ -87,5 +82,5 @@ export default function CommentDialogComponent() {
       </Dialog>
     </div>
   );
-}
-  
+};
+export default HandleSave;
