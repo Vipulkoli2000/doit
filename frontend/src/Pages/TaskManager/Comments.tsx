@@ -10,11 +10,12 @@ import { useParams } from "react-router-dom";
 
 const HandleSave = () => {
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState<string[]>([]);
+  const [comments, setComments] = useState([]);
   const getitem = localStorage.getItem("user");
   const user = getitem ? JSON.parse(getitem) : null;
   const hasFetched = useRef(false);
   const { taskId } = useParams();
+
   useEffect(() => {
     const fetchComments = async () => {
       if (user && !hasFetched.current) {
@@ -26,7 +27,6 @@ const HandleSave = () => {
             },
           });
           const fetchedComments = response.data?.data?.TaskSubmissions || [];
-          console.log(fetchedComments);
           setComments(fetchedComments);
         } catch (error) {
           console.error("Failed to fetch comments", error);
@@ -55,7 +55,7 @@ const HandleSave = () => {
       .then(() => {
         window.location.reload();
         toast.success("Comment created successfully!");
-        setComments((prevComments) => [...prevComments, comment]);
+        setComments((prevComments) => [...prevComments, { comments: comment }]);
       })
       .catch((error) => {
         console.error("Error submitting comment:", error);
@@ -63,25 +63,54 @@ const HandleSave = () => {
       });
   };
 
+  const handleDelete = (commentId) => {
+    axios
+      .delete(`/api/comments/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      .then(() => {
+        toast.success("Comment deleted successfully!");
+        // Filter out the deleted comment from the state
+        setComments((prevComments) =>
+          prevComments.filter((c) => c.id !== commentId)
+        );
+      })
+      .catch((error) => {
+        console.error("Error deleting comment:", error);
+        toast.error("Failed to delete comment.");
+      });
+  };
+
   return (
-    <div className="flex  space-y-4">
+    <div className="flex space-y-4">
       <Sidebar />
-      <div className="flex p-5 flex-col w-full h-full space-y-4">
+      <div className="flex p-5 flex-col   space-y-4">
         <h1 className="text-2xl font-bold tracking-tight">Comments</h1>
         <div className="flex-1 flex flex-col space-y-2 text-center overflow-y-auto">
           {comments.length > 0 ? (
             comments.map((comment, index) => (
               <Card key={index} className="relative mb-2">
                 <CardHeader>
-                  <h3 className="font-semibold text-lg">Comment {index + 1}</h3>
+                  <h3 className="underline font-semibold text-lg">
+                    Comment {index + 1}
+                  </h3>
                 </CardHeader>
 
-                <Button variant="ghost" className="absolute top-2 right-2 p-0">
+                <Button
+                  variant="ghost"
+                  className="absolute top-2 right-2 p-0"
+                  onClick={() => handleDelete(comment.id)} // Add delete functionality
+                >
                   <X className="w-4 h-4" />
                 </Button>
 
                 <CardContent>
-                  <p>{comment && comment.comments}</p>
+                  <p className="border max-h-40 overflow-y-auto">
+                    {" "}
+                    {comment && comment.comments}
+                  </p>
                 </CardContent>
               </Card>
             ))
@@ -90,7 +119,7 @@ const HandleSave = () => {
           )}
         </div>
 
-        {/* Container for Input and Button at the bottom */}
+        {/* Input and Button at the bottom */}
         <div className="flex w-full items-center space-x-2 mt-auto">
           <Input
             value={comment}
