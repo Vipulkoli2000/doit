@@ -25,7 +25,8 @@ const HandleSave = () => {
               Authorization: `Bearer ${user.token}`,
             },
           });
-          const fetchedComments = response.data?.data?.comments || [];
+          const fetchedComments = response.data?.data?.TaskSubmissions || [];
+          console.log(fetchedComments);
           setComments(fetchedComments);
         } catch (error) {
           console.error("Failed to fetch comments", error);
@@ -72,13 +73,15 @@ const HandleSave = () => {
             comments.map((comment, index) => (
               <Card key={index} className="relative mb-2">
                 <CardHeader>
-                  <h3 className="font-semibold text-lg">Comment {index + 1}</h3>
+                  <h3 className="font-semibold text-lg">Comment</h3>
                 </CardHeader>
+
                 <Button variant="ghost" className="absolute top-2 right-2 p-0">
                   <X className="w-4 h-4" />
                 </Button>
+
                 <CardContent>
-                  <p>{comment}</p>
+                  <p>{comment && comment.comments}</p>
                 </CardContent>
               </Card>
             ))
