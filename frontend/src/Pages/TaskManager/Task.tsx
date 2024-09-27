@@ -266,7 +266,7 @@ export const columns: ColumnDef<Payment>[] = [
         }
       };
       const handleDone = async (id: string) => {
-        if (window.confirm("mark this done?")) {
+        if (window.confirm("Archive this task?")) {
           try {
             await axios.delete(`/api/tasks-archive/${id}`, {
               headers: {
@@ -307,7 +307,7 @@ export const columns: ColumnDef<Payment>[] = [
               className="justify-center"
               onClick={() => handleDone(user.id)}
             >
-              Done
+              Archive
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateTask taskId={user.id} initialTaskData={user} />

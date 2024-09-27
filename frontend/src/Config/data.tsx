@@ -20,9 +20,9 @@ export const navItems: NavItem[] = [
     label: "employee",
   },
   {
-    title: "Done",
-    href: "/done",
-    icon: "employee",
-    label: "employee",
+    title: "Archived",
+    href: "/Archived",
+    icon: "dashboard",
+    label: "dashboard",
   },
 ];

@@ -6,7 +6,7 @@ import Dashboard from "./Pages/Dashboard";
 import Users from "./Pages/Users";
 // import Project from "./Pages/Project";
 import Project from "./Pages/Project";
-import Done from "./Pages/TaskManager/Done";
+import Archived from "./Pages/TaskManager/Done";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/user" element={<Users />} />
         <Route path="/project" element={<Project />} />
-        <Route path="/done" element={<Done />} />
+        <Route path="/Archived" element={<Archived />} />
       </Routes>
     </>
   );

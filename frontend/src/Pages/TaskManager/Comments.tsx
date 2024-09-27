@@ -1,120 +1,91 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { MessageSquareText } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { X } from "lucide-react"; // Icon for cross (you can use any icon library you prefer)
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import axios from "axios";
-import { toast } from "sonner";
+  DialogFooter,
+} from "@/components/ui/dialog"; // ShadCN Dialog components
 
-export function TooltipDemo({ taskId }) {
-  // Accept taskId as a prop
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [comments, setComments] = useState("");
-  const getitem = localStorage.getItem("user");
-  const user = JSON.parse(getitem);
+export default function CommentDialogComponent() {
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState<string[]>([]);
 
-  const handleDialogOpen = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-    setComments(""); // Clear the textarea on close
-  };
-
-  const handleKeyDown = async (
-    event: React.KeyboardEvent<HTMLTextAreaElement>
-  ) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault(); // Prevent new line on Enter
-      try {
-        // Send the comment to the API with the task_id
-        await axios.post(
-          `/api/comments`,
-          {
-            comments,
-            task_id: taskId, // Include task_id in the request body
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        toast.success("Comment submitted successfully!");
-        handleDialogClose();
-        fetchComments();
-      } catch (error) {
-        console.error("Error submitting comment:", error);
-        toast.error("Failed to submit comment.");
-      }
+  const handleSave = () => {
+    if (comment.trim()) {
+      setComments([comment, ...comments]);
+      setComment("");
     }
   };
 
-  // Function to fetch comments from the API
-  const fetchComments = async () => {
-    try {
-      const response = await axios.get("/api/comments", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      setComments(response.data); // Assuming the response data is an array of comments
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
+  const handleDelete = (indexToDelete: number) => {
+    setComments(comments.filter((_, index) => index !== indexToDelete));
   };
-
-  // useEffect to fetch comments when the component mounts
-  useEffect(() => {
-    fetchComments();
-  }, []);
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div onClick={handleDialogOpen}>
-            <MessageSquareText />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Comments</p>
-        </TooltipContent>
-      </Tooltip>
-      {/* Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+    <div className="max-w-lg mx-auto mt-10 space-y-4">
+      {/* Dialog Box for Input */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="primary">Add Comment</Button>
+        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Comments</DialogTitle>
-            <DialogDescription>
-              <Textarea
-                id="comments"
-                placeholder="Description/Task"
-                value={comments}
-                onChange={(event) => setComments(event.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={3} // Set initial number of rows
-              />
-            </DialogDescription>
+            <DialogTitle>Add a new comment</DialogTitle>
           </DialogHeader>
+
+          {/* Scrollable area for saved comments */}
+          <div className="max-h-64 overflow-y-auto space-y-2 mb-4">
+            {comments.length > 0 ? (
+              comments.map((comment, index) => (
+                <Card key={index} className="relative mb-2">
+                  <CardHeader>
+                    <h3 className="font-semibold text-lg">
+                      Comment {index + 1}
+                    </h3>
+                  </CardHeader>
+
+                  {/* Cross icon to delete comment */}
+                  <Button
+                    variant="ghost"
+                    className="absolute top-2 right-2 p-0"
+                    onClick={() => handleDelete(index)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+
+                  <CardContent>
+                    <p>{comment}</p>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-gray-500">No comments yet.</p>
+            )}
+          </div>
+
+          {/* Input for adding new comments */}
+          <Input
+            type="text"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Type your comment..."
+            className="mb-2"
+          />
+
+          <DialogFooter>
+            <Button onClick={handleSave} variant="primary">
+              Save Comment
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
-    </TooltipProvider>
+    </div>
   );
 }
-
-export default TooltipDemo;
+  
