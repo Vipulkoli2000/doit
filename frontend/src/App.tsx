@@ -7,6 +7,7 @@ import Users from "./Pages/Users";
 // import Project from "./Pages/Project";
 import Project from "./Pages/Project";
 import Archived from "./Pages/TaskManager/Done";
+import Comments from "./Pages/TaskManager/Comments";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/user" element={<Users />} />
         <Route path="/project" element={<Project />} />
         <Route path="/Archived" element={<Archived />} />
+        <Route path="/comments/:taskId" element={<Comments />} />
       </Routes>
     </>
   );

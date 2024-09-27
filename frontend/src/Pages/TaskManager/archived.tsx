@@ -28,7 +28,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, Toaster } from "sonner";
 import AddTask from "./AddTask";
-import Comments from "./Comments";
+// import Comments from "./Comments";
 import UpdateTask from "./Updatetask";
 import { DataTablePagination } from "../../tasks/components/data-table-pagination";
 import { ChevronLeft } from "lucide-react";
@@ -227,9 +227,7 @@ export const columns: ColumnDef<Payment>[] = [
           title={row.getValue("description")}
           onClick={() => row.getValue("comments")}
         >
-          <div>
-            <Comments />
-          </div>
+          <div>{/* <Comments /> */}</div>
           {row.getValue("comments")}
         </div>
       );
@@ -265,24 +263,7 @@ export const columns: ColumnDef<Payment>[] = [
           }
         }
       };
-      const handleDone = async (id: string) => {
-        if (window.confirm("mark this done?")) {
-          try {
-            await axios.delete(`/api/tasks-archive/${id}`, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${users.token}`,
-              },
-            });
-            // window.location.reload();
-            setData((prevData) => prevData.filter((task) => task.id !== id));
-            toast.success("Task   successfully");
-          } catch (error) {
-            console.error("Error   task:", error);
-            toast.error("Failed to   task");
-          }
-        }
-      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

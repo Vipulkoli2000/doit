@@ -35,9 +35,9 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
   const [description, setDescription] = React.useState(
     initialTaskData.description || ""
   );
-  const [comments, setComments] = React.useState(
-    initialTaskData.comments || ""
-  );
+  // const [comments, setComments] = React.useState(
+  //   initialTaskData.comments || ""
+  // );
   const [priority, setPriority] = React.useState(
     initialTaskData.priority || ""
   );
@@ -130,8 +130,7 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
         {
           title,
           description,
-          comments: "sadasdasd ",
-          priority,
+          comments: priority,
           weight,
           assign_to,
           start_date: formattedStartDate, // Use formatted start date
@@ -205,17 +204,17 @@ const UpdateTask = ({ taskId, initialTaskData }) => {
                         value={description}
                         onChange={(event) => setDescription(event.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="resize-none"
+                        className="resize-none "
                       />
                     </div>
-                    <div className="flex items-center space-x-2">
+                    {/* <div className="flex items-center space-x-2">
                       <Textarea
                         placeholder="Comment"
                         className="flex-grow bg-background border-none text-gray-100 resize-none placeholder-gray-500"
                         value={comments}
                         onChange={(event) => setComments(event.target.value)}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 

@@ -1,44 +1,59 @@
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { X } from "lucide-react"; // Icon for cross (you can use any icon library you prefer)
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"; // ShadCN Dialog components
+import { X } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
+import Sidebar from "@/Dashboard/Sidebar";
+import { Input } from "@/components/ui/input";
+import { useParams } from "react-router-dom";
 
-const HandleSave = ({ taskId, initialTaskData }) => {
+const HandleSave = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<string[]>([]);
-  const [task_id, setTask_id] = useState("");
   const getitem = localStorage.getItem("user");
-  const user = JSON.parse(getitem);
+  const user = getitem ? JSON.parse(getitem) : null;
+  const hasFetched = useRef(false);
+  const { taskId } = useParams();
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (user && !hasFetched.current) {
+        hasFetched.current = true;
+        try {
+          const response = await axios.get("/api/comments", {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          });
+          const fetchedComments = response.data?.data?.comments || [];
+          setComments(fetchedComments);
+        } catch (error) {
+          console.error("Failed to fetch comments", error);
+        }
+      }
+    };
+
+    fetchComments();
+  }, [user]);
 
   const handleSave = () => {
     axios
       .post(
         `/api/comments`,
         {
-          comments: comment,
           task_id: taskId,
+          comments: comment,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`, // Use correct token from localStorage or user state
+            Authorization: `Bearer ${user.token}`,
           },
         }
       )
       .then(() => {
         toast.success("Comment created successfully!");
-        setComment(""); // Clear the input after success
+        setComments((prevComments) => [...prevComments, comment]);
       })
       .catch((error) => {
         console.error("Error submitting comment:", error);
@@ -46,41 +61,47 @@ const HandleSave = ({ taskId, initialTaskData }) => {
       });
   };
 
-  const handleDelete = (indexToDelete: number) => {
-    setComments(comments.filter((_, index) => index !== indexToDelete));
-  };
-
   return (
-    <div className="max-w-lg mx-auto mt-10 space-y-4">
-      {/* Dialog Box for Input */}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="primary">Add Comment</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add a new comment</DialogTitle>
-          </DialogHeader>
+    <div className="flex  space-y-4">
+      <Sidebar />
+      <div className="flex p-5 flex-col w-full h-full space-y-4">
+        {/* Comments List */}
+        <h1>Comments</h1>
+        <div className="flex-1 flex flex-col space-y-2 text-center overflow-y-auto">
+          {comments.length > 0 ? (
+            comments.map((comment, index) => (
+              <Card key={index} className="relative mb-2">
+                <CardHeader>
+                  <h3 className="font-semibold text-lg">Comment {index + 1}</h3>
+                </CardHeader>
+                <Button variant="ghost" className="absolute top-2 right-2 p-0">
+                  <X className="w-4 h-4" />
+                </Button>
+                <CardContent>
+                  <p>{comment}</p>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <p className="text-gray-500">No comments yet.</p>
+          )}
+        </div>
 
-           <div className="max-h-64 overflow-y-auto space-y-2 mb-4"></div>
-
- 
+        {/* Container for Input and Button at the bottom */}
+        <div className="flex w-full items-center space-x-2 mt-auto">
           <Input
-            type="text"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Type your comment..."
-            className="mb-2"
+            className="flex-1 mb-2"
           />
-
-          <DialogFooter>
-            <Button onClick={handleSave} variant="primary">
-              Save Comment
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <Button onClick={handleSave} className="mb-2">
+            Save Comment
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
+
 export default HandleSave;

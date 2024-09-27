@@ -39,7 +39,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DashboardNav } from "../../Dashboard/Dashboard-nav";
 import { navItems } from "@/Config/data";
 import Dialog from "./useDialog";
-import { MessageSquareText } from "lucide-react";
+import { MessageSquarePlus } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -57,6 +57,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -99,6 +100,7 @@ export const columns: ColumnDef<Payment>[] = [
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
         className="rounded-full"
+        onClick={() => handleDone(user.id)}
       />
     ),
     enableSorting: false,
@@ -224,14 +226,19 @@ export const columns: ColumnDef<Payment>[] = [
       const user = row.original;
       const getitem = localStorage.getItem("user");
       const users = JSON.parse(getitem);
+      const navigate = useNavigate(); // Initialize the navigate function
+
+      const handleCommentsClick = () => {
+        navigate(`/comments/${user.id}`);
+      };
       return (
         <div
           className=" flex items-center space-x-2 capitalize hover:cursor-pointer"
           title={row.getValue("description")}
-          onClick={() => row.getValue("comments")}
+          onClick={handleCommentsClick}
         >
           <div>
-            <Comments taskId={user.id} initialTaskData={user} />
+            <MessageSquarePlus taskId={user.id} initialTaskData={user} />
           </div>
           {row.getValue("comments")}
         </div>
@@ -310,7 +317,7 @@ export const columns: ColumnDef<Payment>[] = [
               className="justify-center"
               onClick={() => handleDone(user.id)}
             >
-              Done
+              Archive
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <UpdateTask taskId={user.id} initialTaskData={user} />
