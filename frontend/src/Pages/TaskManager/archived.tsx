@@ -274,7 +274,7 @@ export const columns: ColumnDef<Payment>[] = [
                 Authorization: `Bearer ${users.token}`,
               },
             });
-            window.location.reload();
+            // window.location.reload();
             setData((prevData) => prevData.filter((task) => task.id !== id));
             toast.success("Task   successfully");
           } catch (error) {

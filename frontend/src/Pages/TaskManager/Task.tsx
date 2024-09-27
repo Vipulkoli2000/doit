@@ -84,7 +84,7 @@ export const columns: ColumnDef<Payment>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
-      className="rounded-full"
+        className="rounded-full"
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -221,14 +221,72 @@ export const columns: ColumnDef<Payment>[] = [
   {
     id: "comments",
     cell: ({ row }) => {
+      const [comment, setComment] = React.useState("");
+      const [commentError, setCommentError] = React.useState("");
+      const getitem = localStorage.getItem("user");
+      const users = JSON.parse(getitem);
+
+      const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+          e.preventDefault(); // Prevent default behavior
+          register(); // Trigger form submission
+        }
+      };
+      const register = async (id: string) => {
+        // if (!description.trim()) {
+        //   toast.error("Task description is required.");
+        //   return;
+        // }
+        axios
+          .get(
+            `/api/comment/${id}`,
+            {
+              comment,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${users.token}`,
+              },
+            }
+          )
+
+          .then(() => {
+            setData((prevData) => prevData.filter((task) => task.id !== id));
+
+            localStorage.setItem("toastMessage", "Task created successfully.");
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          })
+          .catch((error) => {
+            localStorage.setItem("toastMessage", "Failed to create task.");
+            console.error(error);
+          });
+      };
       return (
         <div
           className=" flex items-center space-x-2 capitalize hover:cursor-pointer"
           title={row.getValue("description")}
           onClick={() => row.getValue("comments")}
         >
-          <div>
-            <Comments />
+          <div className="flex items-center justify-between">
+            <Input
+              placeholder="Type here  ..."
+              autoFocus
+              className="mb-2 w-full outline-none border-0 text-sm"
+              style={{}}
+              id="comment"
+              value={comment}
+              onChange={(event) => {
+                setComment(event.target.value);
+                if (commentError) setCommentError(""); // Clear error if user starts typing
+              }}
+              onKeyDown={handleKeyDown}
+            />
+            {commentError && (
+              <p className="text-red-500 text-sm mt-1">{commentError}</p>
+            )}
           </div>
           {row.getValue("comments")}
         </div>
