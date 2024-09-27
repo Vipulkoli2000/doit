@@ -53,6 +53,7 @@ const HandleSave = () => {
         }
       )
       .then(() => {
+        window.location.reload();
         toast.success("Comment created successfully!");
         setComments((prevComments) => [...prevComments, comment]);
       })
@@ -66,14 +67,13 @@ const HandleSave = () => {
     <div className="flex  space-y-4">
       <Sidebar />
       <div className="flex p-5 flex-col w-full h-full space-y-4">
-        {/* Comments List */}
-        <h1>Comments</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Comments</h1>
         <div className="flex-1 flex flex-col space-y-2 text-center overflow-y-auto">
           {comments.length > 0 ? (
             comments.map((comment, index) => (
               <Card key={index} className="relative mb-2">
                 <CardHeader>
-                  <h3 className="font-semibold text-lg">Comment</h3>
+                  <h3 className="font-semibold text-lg">Comment {index + 1}</h3>
                 </CardHeader>
 
                 <Button variant="ghost" className="absolute top-2 right-2 p-0">
