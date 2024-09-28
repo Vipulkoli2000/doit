@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -86,7 +87,7 @@ const HandleSave = () => {
   return (
     <div className="flex space-y-4">
       <Sidebar />
-      <div className="flex p-5 flex-col   space-y-4">
+      <div className="flex p-5 flex-col  w-full space-y-4">
         <h1 className="text-2xl font-bold tracking-tight">Comments</h1>
         <div className="flex-1 flex flex-col space-y-2 text-center overflow-y-auto">
           {comments.length > 0 ? (

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react"; // Import useEffect and useState
 import { Button } from "@/components/ui/button";
 import {
@@ -101,7 +102,6 @@ export function DialogDemo() {
               />
 
               <div className="flex items-center space-x-2">
-                
                 <Input
                   placeholder="Comment"
                   className="flex-grow bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500"

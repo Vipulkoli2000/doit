@@ -1,7 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+import fluid, { extract } from "fluid-tailwind";
 export default {
   darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", extract],
+  files: [
+    /* ... */
+  ],
+
   theme: {
     extend: {
       backgroundImage: {
@@ -96,6 +101,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-  
+  plugins: [require("tailwindcss-animate"), fluid],
 };

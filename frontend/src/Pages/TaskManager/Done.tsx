@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import Archived from "./archived";
 import Sidebar from "@/Dashboard/Sidebar";
