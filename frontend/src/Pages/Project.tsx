@@ -194,7 +194,7 @@ export function DataTableDemo() {
 
   return (
     <div className="flex bg-background">
-      <Sidebar />
+      <Sidebar className="min-h-screen" />
       <div className="w-full py-4 px-4">
         <Sheet>
           <SheetTrigger className="block sm:hidden">

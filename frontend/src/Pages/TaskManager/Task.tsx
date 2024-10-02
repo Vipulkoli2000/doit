@@ -23,6 +23,7 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logout from "./Logouttask";
+import Theme from "./Theme";
 import FilterPriority from "./FilterPriority";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -67,6 +68,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 import { Label } from "@/components/ui/label";
 export type Payment = {
@@ -237,6 +244,16 @@ export const columns: ColumnDef<Payment>[] = [
           title={row.getValue("description")}
           onClick={handleCommentsClick}
         >
+          <ContextMenu>
+            <ContextMenuTrigger>---</ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem>Profile</ContextMenuItem>
+              <ContextMenuItem>Billing</ContextMenuItem>
+              <ContextMenuItem>Team</ContextMenuItem>
+              <ContextMenuItem>Subscription</ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+
           <div>
             <MessageSquarePlus taskId={user.id} initialTaskData={user} />
           </div>
@@ -466,7 +483,7 @@ export function DataTableDemo() {
 
   return (
     <div className="flex bg-background">
-      <Sidebar />
+      <Sidebar className="min-h-screen" />
 
       <div className="w-full py-4 px-4">
         <Sheet>
@@ -509,6 +526,9 @@ export function DataTableDemo() {
           <div>
             {/* Logout component */}
             <Logout />
+          </div>
+          <div>
+            <Theme />
           </div>
         </div>
 
