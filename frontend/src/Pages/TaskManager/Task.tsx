@@ -524,11 +524,13 @@ export function DataTableDemo() {
             <h1 className="text-2xl font-bold tracking-tight">Task Manager</h1>
           </div>
           <div>
-            {/* Logout component */}
-            <Logout />
-          </div>
-          <div>
-            <Theme />
+            <div>
+              {/* Logout component */}
+              <Logout />
+            </div>
+            <div>
+              <Theme />
+            </div>
           </div>
         </div>
 
